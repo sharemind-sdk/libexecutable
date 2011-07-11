@@ -1,5 +1,8 @@
 #include "libsme.h"
 
+#include <assert.h>
+#include <stddef.h>
+
 
 static const char magic[32] = "Sharemind Executable";
 
@@ -9,12 +12,38 @@ void SME_Common_Header_init(struct SME_Common_Header * h, uint16_t version) {
     h->file_format_version = version;
 }
 
-int SME_Common_Header_read(void * from, struct SME_Common_Header * to) {
-    __builtin_memcpy(to, from, sizeof(struct SME_Common_Header));
-    if (__builtin_memcmp(to->magic, magic, 32) != 0)
-        return 0;
+enum SME_Read_Error SME_Common_Header_read(const void * from, const struct SME_Common_Header ** h) {
+    assert(from);
+
+    union {
+        const void * v;
+        const struct SME_Common_Header * h;
+    } c = { .v = from };
+    enum SME_Read_Error err;
+
+    if (__builtin_memcmp(c.h->magic, magic, 32) != 0) {
+        err = SME_READ_ERROR_MAGIC;
+        goto SME_Common_Header_read_error;
+    }
+
     static const char byte_order_verification[8] = "\xef\xcd\xab\x89\x67\x45\x23\x01";
-    if (__builtin_memcmp(&to->byte_order_verification, byte_order_verification, 8) != 0)
-        return 0;
-    return 1;
+    if (__builtin_memcmp(&c.h->byte_order_verification, byte_order_verification, 8) != 0) {
+        err = SME_READ_ERROR_BYTE_ORDER_VERIFICATION;
+        goto SME_Common_Header_read_error;
+    }
+
+    if (c.h->file_format_version > SME_VERSION_SUPPORTED) {
+        err = SME_READ_ERROR_VERSION_NOT_SUPPORTED;
+        goto SME_Common_Header_read_error;
+    }
+
+    if (h)
+        (*h) = c.h;
+    return SME_READ_OK;
+
+SME_Common_Header_read_error:
+
+    if (h)
+        (*h) = NULL;
+    return err;
 }

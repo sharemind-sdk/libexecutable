@@ -3,19 +3,11 @@
 
 #include <stdint.h>
 #include "../static_assert.h"
+#include "sme_read_error.h"
+#include "sme_section_type.h"
 
 
-enum SME_Section_Type {
-    SME_SECTION_TYPE_TEXT = 0,
-    SME_SECTION_TYPE_RODATA = 1,
-    SME_SECTION_TYPE_DATA = 2,
-    SME_SECTION_TYPE_BSS = 3,
-    SME_SECTION_TYPE_BIND = 4,
-    SME_SECTION_TYPE_DEBUG = 5,
-    SME_SECTION_TYPE_COUNT_0x0 = 6,
-    SME_SECTION_TYPE_COUNT = 6
-};
-
+#define SME_VERSION_SUPPORTED 0x0u
 
 struct SME_Common_Header {
     char magic[32];
@@ -25,6 +17,6 @@ struct SME_Common_Header {
 SM_STATIC_ASSERT(sizeof(struct SME_Common_Header) == 32 + 8 + 2);
 
 void SME_Common_Header_init(struct SME_Common_Header * h, uint16_t version);
-int SME_Common_Header_read(void * from, struct SME_Common_Header * to);
+enum SME_Read_Error SME_Common_Header_read(const void * from, const struct SME_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 #endif /* LIBSME_LIBSME_H */

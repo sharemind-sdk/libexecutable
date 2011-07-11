@@ -1,7 +1,7 @@
 #include "libsme_0x0.h"
 
 #include <assert.h>
-
+#include <stddef.h>
 
 void SME_Header_0x0_init(struct SME_Header_0x0 * header,
                          uint8_t number_of_units_minus_one,
@@ -12,14 +12,63 @@ void SME_Header_0x0_init(struct SME_Header_0x0 * header,
     __builtin_bzero(header->zeroPadding, 4);
 }
 
+enum SME_Read_Error SME_Header_0x0_read(const void * from, const struct SME_Header_0x0 ** h) {
+    assert(from);
+
+    union {
+        const void * v;
+        const struct SME_Header_0x0 * h;
+    } c = { .v = from };
+
+    static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
+    if (c.h->active_linking_unit > c.h->number_of_units_minus_one
+        || __builtin_memcmp(zeroPadding, c.h->zeroPadding, 4) != 0)
+    {
+        if (h)
+            *h = NULL;
+        return SME_READ_ERROR_INVALID_DATA;
+    }
+
+    if (h)
+        (*h) = c.h;
+    return SME_READ_OK;
+}
+
+static const char luMagic[32] = "Linking Unit";
+
 void SME_Unit_Header_0x0_init(struct SME_Unit_Header_0x0 * header,
                               uint8_t sections_minus_one)
 {
-    static const char magic[32] = "Linking Unit";
-    __builtin_memcpy(&header->type, magic, 32);
+    __builtin_memcpy(&header->type, luMagic, 32);
     header->sections_minus_one = sections_minus_one;
     __builtin_bzero(&header->zeroPadding, 7);
 }
+
+enum SME_Read_Error SME_Unit_Header_0x0_read(const void * from, const struct SME_Unit_Header_0x0 ** h) {
+    assert(from);
+    union {
+        const void * v;
+        const struct SME_Unit_Header_0x0 * h;
+    } c = { .v = from };
+
+    static const uint8_t zeroPadding[7] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
+    if (__builtin_memcmp(c.h->type, luMagic, 32) != 0
+        || c.h->sections_minus_one > SME_SECTION_TYPE_COUNT_0x0
+        || __builtin_memcmp(c.h->zeroPadding, zeroPadding, 7) != 0)
+    {
+        if (h)
+            (*h) = NULL;
+        return SME_READ_ERROR_INVALID_DATA;
+    }
+
+    if (h)
+        (*h) = c.h;
+    return SME_READ_OK;
+}
+
+static const char sMagic[SME_SECTION_TYPE_COUNT_0x0][32] = {
+    "TEXT", "RODATA", "DATA", "BSS", "BIND", "DEBUG"
+};
 
 void SME_Section_Header_0x0_init(struct SME_Section_Header_0x0 * header,
                                  enum SME_Section_Type type,
@@ -27,10 +76,46 @@ void SME_Section_Header_0x0_init(struct SME_Section_Header_0x0 * header,
 {
     assert(type < SME_SECTION_TYPE_COUNT_0x0);
 
-    static const char magic[SME_SECTION_TYPE_COUNT_0x0][32] = {
-        "TEXT", "RODATA", "DATA", "BSS", "BIND", "DEBUG"
-    };
-    __builtin_memcpy(header->type, magic[type], 32);
+    __builtin_memcpy(header->type, sMagic[type], 32);
     header->length = length;
     __builtin_bzero(header->zeroPadding, 4);
+}
+
+enum SME_Read_Error SME_Section_Header_0x0_read(const void * from, const struct SME_Section_Header_0x0 ** h) {
+    assert(from);
+    union {
+        const void * v;
+        const struct SME_Section_Header_0x0 * h;
+    } c = { .v = from };
+
+    static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
+    for (unsigned i = 0; i < SME_SECTION_TYPE_COUNT_0x0; i++)
+        if (__builtin_memcmp(c.h->type, sMagic[i], 32) == 0)
+            goto SME_Section_Header_0x0_read_type_ok;
+
+    goto SME_Section_Header_0x0_read_error;
+
+SME_Section_Header_0x0_read_type_ok:
+
+    if (c.h->length <= 0u || __builtin_memcmp(c.h->zeroPadding, zeroPadding, 4) != 0)
+        goto SME_Section_Header_0x0_read_error;
+
+    if (h)
+        (*h) = c.h;
+    return SME_READ_OK;
+
+SME_Section_Header_0x0_read_error:
+
+    if (h)
+        (*h) = NULL;
+    return SME_READ_ERROR_INVALID_DATA;
+}
+
+enum SME_Section_Type SME_Section_Header_0x0_type(const struct SME_Section_Header_0x0 * h) {
+    assert(h);
+    for (enum SME_Section_Type type = SME_SECTION_TYPE_TEXT; type < SME_SECTION_TYPE_COUNT_0x0; type++)
+        if (__builtin_memcmp(h->type, sMagic[type], 32) == 0)
+            return type;
+
+    return -1;
 }
