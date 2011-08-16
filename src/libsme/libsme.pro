@@ -16,3 +16,9 @@ DESTDIR = ../../lib/
 SOURCES += \
     libsme.c \
     libsme_0x0.c
+
+OTHER_FILES += \
+    libsme_0x0.h \
+    libsme.h \
+    sme_read_error.h \
+    sme_section_type.h
