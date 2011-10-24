@@ -122,9 +122,12 @@ SME_Section_Header_0x0_read_error:
 
 enum SME_Section_Type SME_Section_Header_0x0_type(const struct SME_Section_Header_0x0 * h) {
     assert(h);
-    for (enum SME_Section_Type type = SME_SECTION_TYPE_TEXT; type < SME_SECTION_TYPE_COUNT_0x0; type++)
-        if (__builtin_memcmp(h->type, sMagic[type], 32) == 0)
-            return type;
 
-    return -1;
+#define SME_ENUM_Section_Type_match(unused,unused2,e) \
+    if (SM_T(2,0,e) != SME_SECTION_TYPE_INVALID && __builtin_memcmp(h->type, sMagic[SM_T(2,0,e)], 32) == 0) \
+        return SM_T(2,0,e);
+
+    BOOST_PP_SEQ_FOR_EACH(SME_ENUM_Section_Type_match,_,SME_ENUM_Section_Type)
+
+    return SME_SECTION_TYPE_INVALID;
 }
