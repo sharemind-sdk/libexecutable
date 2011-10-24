@@ -35,7 +35,7 @@ enum SME_Read_Error SME_Common_Header_read(const void * from, const struct SME_C
         goto SME_Common_Header_read_error;
     }
 
-    static const char byte_order_verification[8] = "\xef\xcd\xab\x89\x67\x45\x23\x01";
+    static const unsigned char byte_order_verification[8] = { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 };
     if (__builtin_memcmp(&c.h->byte_order_verification, byte_order_verification, 8) != 0) {
         err = SME_READ_ERROR_BYTE_ORDER_VERIFICATION;
         goto SME_Common_Header_read_error;
