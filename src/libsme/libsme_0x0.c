@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <stddef.h>
 
-void SME_Header_0x0_init(struct SME_Header_0x0 * header,
+void SME_Header_0x0_init(SME_Header_0x0 * header,
                          uint8_t number_of_units_minus_one,
                          uint8_t active_linking_unit)
 {
@@ -21,12 +21,12 @@ void SME_Header_0x0_init(struct SME_Header_0x0 * header,
     __builtin_bzero(header->zeroPadding, 4);
 }
 
-enum SME_Read_Error SME_Header_0x0_read(const void * from, const struct SME_Header_0x0 ** h) {
+SME_Read_Error SME_Header_0x0_read(const void * from, const SME_Header_0x0 ** h) {
     assert(from);
 
     union {
         const void * v;
-        const struct SME_Header_0x0 * h;
+        const SME_Header_0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
@@ -45,7 +45,7 @@ enum SME_Read_Error SME_Header_0x0_read(const void * from, const struct SME_Head
 
 static const char luMagic[32] = "Linking Unit";
 
-void SME_Unit_Header_0x0_init(struct SME_Unit_Header_0x0 * header,
+void SME_Unit_Header_0x0_init(SME_Unit_Header_0x0 * header,
                               uint8_t sections_minus_one)
 {
     __builtin_memcpy(&header->type, luMagic, 32);
@@ -53,11 +53,11 @@ void SME_Unit_Header_0x0_init(struct SME_Unit_Header_0x0 * header,
     __builtin_bzero(&header->zeroPadding, 7);
 }
 
-enum SME_Read_Error SME_Unit_Header_0x0_read(const void * from, const struct SME_Unit_Header_0x0 ** h) {
+SME_Read_Error SME_Unit_Header_0x0_read(const void * from, const SME_Unit_Header_0x0 ** h) {
     assert(from);
     union {
         const void * v;
-        const struct SME_Unit_Header_0x0 * h;
+        const SME_Unit_Header_0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[7] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
@@ -79,8 +79,8 @@ static const char sMagic[SME_SECTION_TYPE_COUNT_0x0][32] = {
     "TEXT", "RODATA", "DATA", "BSS", "BIND", "DEBUG"
 };
 
-void SME_Section_Header_0x0_init(struct SME_Section_Header_0x0 * header,
-                                 enum SME_Section_Type type,
+void SME_Section_Header_0x0_init(SME_Section_Header_0x0 * header,
+                                 SME_Section_Type type,
                                  uint32_t length)
 {
     assert(type < SME_SECTION_TYPE_COUNT_0x0);
@@ -90,11 +90,11 @@ void SME_Section_Header_0x0_init(struct SME_Section_Header_0x0 * header,
     __builtin_bzero(header->zeroPadding, 4);
 }
 
-enum SME_Read_Error SME_Section_Header_0x0_read(const void * from, const struct SME_Section_Header_0x0 ** h) {
+SME_Read_Error SME_Section_Header_0x0_read(const void * from, const SME_Section_Header_0x0 ** h) {
     assert(from);
     union {
         const void * v;
-        const struct SME_Section_Header_0x0 * h;
+        const SME_Section_Header_0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
@@ -120,7 +120,7 @@ SME_Section_Header_0x0_read_error:
     return SME_READ_ERROR_INVALID_DATA;
 }
 
-enum SME_Section_Type SME_Section_Header_0x0_type(const struct SME_Section_Header_0x0 * h) {
+SME_Section_Type SME_Section_Header_0x0_type(const SME_Section_Header_0x0 * h) {
     assert(h);
 
 #define SME_ENUM_Section_Type_match(unused,unused2,e) \

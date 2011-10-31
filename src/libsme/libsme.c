@@ -15,20 +15,20 @@
 
 static const char magic[32] = "Sharemind Executable";
 
-void SME_Common_Header_init(struct SME_Common_Header * h, uint16_t version) {
+void SME_Common_Header_init(SME_Common_Header * h, uint16_t version) {
     __builtin_memcpy(h->magic, magic, 32);
     h->byte_order_verification = 0x0123456789abcdef;
     h->file_format_version = version;
 }
 
-enum SME_Read_Error SME_Common_Header_read(const void * from, const struct SME_Common_Header ** h) {
+SME_Read_Error SME_Common_Header_read(const void * from, const SME_Common_Header ** h) {
     assert(from);
 
     union {
         const void * v;
-        const struct SME_Common_Header * h;
+        const SME_Common_Header * h;
     } c = { .v = from };
-    enum SME_Read_Error err;
+    SME_Read_Error err;
 
     if (__builtin_memcmp(c.h->magic, magic, 32) != 0) {
         err = SME_READ_ERROR_MAGIC;

@@ -18,14 +18,14 @@
 
 #define SME_VERSION_SUPPORTED 0x0u
 
-struct SME_Common_Header {
+typedef struct {
     char magic[32];
     uint64_t byte_order_verification __attribute__ ((packed));
     uint16_t file_format_version __attribute__ ((packed));
-};
-SM_STATIC_ASSERT(sizeof(struct SME_Common_Header) == 32 + 8 + 2);
+} SME_Common_Header;
+SM_STATIC_ASSERT(sizeof(SME_Common_Header) == 32 + 8 + 2);
 
-void SME_Common_Header_init(struct SME_Common_Header * h, uint16_t version);
-enum SME_Read_Error SME_Common_Header_read(const void * from, const struct SME_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
+void SME_Common_Header_init(SME_Common_Header * h, uint16_t version);
+SME_Read_Error SME_Common_Header_read(const void * from, const SME_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 #endif /* LIBSME_LIBSME_H */
