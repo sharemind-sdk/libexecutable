@@ -123,11 +123,17 @@ SME_Section_Header_0x0_read_error:
 SME_Section_Type SME_Section_Header_0x0_type(const SME_Section_Header_0x0 * h) {
     assert(h);
 
-#define SME_ENUM_Section_Type_match(unused,unused2,e) \
-    if (SM_T(2,0,e) != SME_SECTION_TYPE_INVALID && __builtin_memcmp(h->type, sMagic[SM_T(2,0,e)], 32) == 0) \
-        return SM_T(2,0,e);
+#define MATCH_TYPE(e) \
+    if ((e) != SME_SECTION_TYPE_INVALID && __builtin_memcmp(h->type, sMagic[(e)], 32) == 0) { \
+        return (e); \
+    } else (void) 0
 
-    BOOST_PP_SEQ_FOR_EACH(SME_ENUM_Section_Type_match,_,SME_ENUM_Section_Type)
+    MATCH_TYPE(SME_SECTION_TYPE_TEXT);
+    MATCH_TYPE(SME_SECTION_TYPE_RODATA);
+    MATCH_TYPE(SME_SECTION_TYPE_DATA);
+    MATCH_TYPE(SME_SECTION_TYPE_BSS);
+    MATCH_TYPE(SME_SECTION_TYPE_BIND);
+    MATCH_TYPE(SME_SECTION_TYPE_DEBUG);
 
     return SME_SECTION_TYPE_INVALID;
 }
