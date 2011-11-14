@@ -17,27 +17,27 @@
 
 
 typedef struct {
-    uint8_t number_of_units_minus_one;
-    uint8_t active_linking_unit;
+    uint8_t numberOfUnitsMinusOne;
+    uint8_t activeLinkingUnit;
     uint8_t zeroPadding[4];
 } SME_Header_0x0;
 SM_STATIC_ASSERT(sizeof(SME_Header_0x0) == 1u + 1u + 4u);
 
 void SME_Header_0x0_init(SME_Header_0x0 * header,
-                         uint8_t number_of_units_minus_one,
-                         uint8_t active_linking_unit);
+                         uint8_t numberOfUnitsMinusOne,
+                         uint8_t activeLinkingUnit);
 SME_Read_Error SME_Header_0x0_read(const void * from, const SME_Header_0x0 ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 
 typedef struct {
     char type[32];
-    uint8_t sections_minus_one;
+    uint8_t sectionsMinusOne;
     uint8_t zeroPadding[7];
 } SME_Unit_Header_0x0;
 SM_STATIC_ASSERT(sizeof(SME_Unit_Header_0x0) == 32u + 1u + 7u);
 
 void SME_Unit_Header_0x0_init(SME_Unit_Header_0x0 * header,
-                              uint8_t sections_minus_one);
+                              uint8_t sectionsMinusOne);
 SME_Read_Error SME_Unit_Header_0x0_read(const void * from, const SME_Unit_Header_0x0 ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 typedef struct {

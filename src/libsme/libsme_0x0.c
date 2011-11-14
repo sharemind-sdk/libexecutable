@@ -13,11 +13,11 @@
 #include <stddef.h>
 
 void SME_Header_0x0_init(SME_Header_0x0 * header,
-                         uint8_t number_of_units_minus_one,
-                         uint8_t active_linking_unit)
+                         uint8_t numberOfUnitsMinusOne,
+                         uint8_t activeLinkingUnit)
 {
-    header->number_of_units_minus_one = number_of_units_minus_one;
-    header->active_linking_unit = active_linking_unit;
+    header->numberOfUnitsMinusOne = numberOfUnitsMinusOne;
+    header->activeLinkingUnit = activeLinkingUnit;
     __builtin_bzero(header->zeroPadding, 4);
 }
 
@@ -30,7 +30,7 @@ SME_Read_Error SME_Header_0x0_read(const void * from, const SME_Header_0x0 ** h)
     } c = { .v = from };
 
     static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
-    if (c.h->active_linking_unit > c.h->number_of_units_minus_one
+    if (c.h->activeLinkingUnit > c.h->numberOfUnitsMinusOne
         || __builtin_memcmp(zeroPadding, c.h->zeroPadding, 4) != 0)
     {
         if (h)
@@ -46,10 +46,10 @@ SME_Read_Error SME_Header_0x0_read(const void * from, const SME_Header_0x0 ** h)
 static const char luMagic[32] = "Linking Unit";
 
 void SME_Unit_Header_0x0_init(SME_Unit_Header_0x0 * header,
-                              uint8_t sections_minus_one)
+                              uint8_t sectionsMinusOne)
 {
     __builtin_memcpy(&header->type, luMagic, 32);
-    header->sections_minus_one = sections_minus_one;
+    header->sectionsMinusOne = sectionsMinusOne;
     __builtin_bzero(&header->zeroPadding, 7);
 }
 
@@ -62,7 +62,7 @@ SME_Read_Error SME_Unit_Header_0x0_read(const void * from, const SME_Unit_Header
 
     static const uint8_t zeroPadding[7] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
     if (__builtin_memcmp(c.h->type, luMagic, 32) != 0
-        || c.h->sections_minus_one > SME_SECTION_TYPE_COUNT_0x0
+        || c.h->sectionsMinusOne > SME_SECTION_TYPE_COUNT_0x0
         || __builtin_memcmp(c.h->zeroPadding, zeroPadding, 7) != 0)
     {
         if (h)

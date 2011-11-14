@@ -20,8 +20,8 @@
 
 typedef struct {
     char magic[32];
-    uint64_t byte_order_verification __attribute__ ((packed));
-    uint16_t file_format_version __attribute__ ((packed));
+    uint64_t byteOrderVerification __attribute__ ((packed));
+    uint16_t fileFormatVersion __attribute__ ((packed));
 } SME_Common_Header;
 SM_STATIC_ASSERT(sizeof(SME_Common_Header) == 32 + 8 + 2);
 
