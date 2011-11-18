@@ -7,8 +7,8 @@
  * code is subject to the appropriate license agreement.
  */
 
-#ifndef LIBSME_LIBSME_0x0_H
-#define LIBSME_LIBSME_0x0_H
+#ifndef SHAREMIND_LIBSME_LIBSME_0x0_H
+#define SHAREMIND_LIBSME_LIBSME_0x0_H
 
 #include <stdint.h>
 #include "../static_assert.h"
@@ -53,4 +53,4 @@ void SME_Section_Header_0x0_init(SME_Section_Header_0x0 * header,
 SME_Read_Error SME_Section_Header_0x0_read(const void * from, const SME_Section_Header_0x0 ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 SME_Section_Type SME_Section_Header_0x0_type(const SME_Section_Header_0x0 * h) __attribute__ ((nonnull(1), warn_unused_result));
 
-#endif /* LIBSME_LIBSME_0x0_H */
+#endif /* SHAREMIND_LIBSME_LIBSME_0x0_H */

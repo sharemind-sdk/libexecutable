@@ -7,8 +7,8 @@
  * code is subject to the appropriate license agreement.
  */
 
-#ifndef LIBSME_LIBSME_H
-#define LIBSME_LIBSME_H
+#ifndef SHAREMIND_LIBSME_LIBSME_H
+#define SHAREMIND_LIBSME_LIBSME_H
 
 #include <stdint.h>
 #include "../static_assert.h"
@@ -28,4 +28,4 @@ SM_STATIC_ASSERT(sizeof(SME_Common_Header) == 32 + 8 + 2);
 void SME_Common_Header_init(SME_Common_Header * h, uint16_t version);
 SME_Read_Error SME_Common_Header_read(const void * from, const SME_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
-#endif /* LIBSME_LIBSME_H */
+#endif /* SHAREMIND_LIBSME_LIBSME_H */
