@@ -10,7 +10,7 @@
 #ifndef LIBSME_SME_SECTION_TYPE_H
 #define LIBSME_SME_SECTION_TYPE_H
 
-#include "../preprocessor.h"
+#include <sharemind/preprocessor.h>
 
 
 #define SME_ENUM_Section_Type \

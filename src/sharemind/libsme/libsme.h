@@ -10,8 +10,8 @@
 #ifndef SHAREMIND_LIBSME_LIBSME_H
 #define SHAREMIND_LIBSME_LIBSME_H
 
+#include <sharemind/static_assert.h>
 #include <stdint.h>
-#include "../static_assert.h"
 #include "sme_read_error.h"
 #include "sme_section_type.h"
 
