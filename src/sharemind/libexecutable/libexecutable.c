@@ -7,7 +7,7 @@
  * code is subject to the appropriate license agreement.
  */
 
-#include "libsme.h"
+#include "libexecutable.h"
 
 #include <assert.h>
 #include <stddef.h>

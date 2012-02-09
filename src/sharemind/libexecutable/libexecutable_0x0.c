@@ -7,7 +7,7 @@
  * code is subject to the appropriate license agreement.
  */
 
-#include "libsme_0x0.h"
+#include "libexecutable_0x0.h"
 
 #include <assert.h>
 #include <stddef.h>
