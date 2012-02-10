@@ -63,7 +63,7 @@ ADD_LIBRARY("libexecutable" SHARED
             ${PREPARED_OTHER_FILES}) # <-- hack for Qt Creator to include other files)
 
 SET_TARGET_PROPERTIES("libexecutable" PROPERTIES
-                      OUTPUT_NAME "executable"
+                      OUTPUT_NAME "sharemind_executable"
                       LIBRARY_OUTPUT_DIRECTORY "${SHAREMIND_LIB_DIR}"
                       VERSION "0.1.0.0"
                       SOVERSION "0.1")
