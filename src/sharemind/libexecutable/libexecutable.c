@@ -15,18 +15,18 @@
 
 static const char magic[32] = "Sharemind Executable";
 
-void sharemind_executable_common_header_init(Sharemind_Executable_Common_Header * h, uint16_t version) {
+void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version) {
     __builtin_memcpy(h->magic, magic, 32);
     h->byteOrderVerification = 0x0123456789abcdef;
     h->fileFormatVersion = version;
 }
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_common_header_read(const void * from, const Sharemind_Executable_Common_Header ** h) {
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h) {
     assert(from);
 
     union {
         const void * v;
-        const Sharemind_Executable_Common_Header * h;
+        const SharemindExecutableCommonHeader * h;
     } c = { .v = from };
     SHAREMIND_EXECUTABLE_READ_ERROR err;
 

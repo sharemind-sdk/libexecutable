@@ -24,17 +24,17 @@ typedef struct __attribute__ ((__packed__)) {
     uint8_t numberOfUnitsMinusOne;
     uint8_t activeLinkingUnit;
     uint8_t zeroPadding[4];
-} Sharemind_Executable_Header_0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Header_0x0) == 1u + 1u + 4u);
+} SharemindExecutableHeader0x0;
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableHeader0x0) == 1u + 1u + 4u);
 
-void sharemind_executable_header_0x0_init(
-        Sharemind_Executable_Header_0x0 * header,
+void SharemindExecutableHeader0x0_init(
+        SharemindExecutableHeader0x0 * header,
         uint8_t numberOfUnitsMinusOne,
         uint8_t activeLinkingUnit);
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_header_0x0_read(
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableHeader0x0_read(
         const void * from,
-        const Sharemind_Executable_Header_0x0 ** h)
+        const SharemindExecutableHeader0x0 ** h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 
@@ -46,16 +46,16 @@ typedef struct __attribute__ ((__packed__)) {
     char type[32];
     uint8_t sectionsMinusOne;
     uint8_t zeroPadding[7];
-} Sharemind_Executable_Unit_Header_0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Unit_Header_0x0) == 32u + 1u + 7u);
+} SharemindExecutableUnitHeader0x0;
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableUnitHeader0x0) == 32u + 1u + 7u);
 
-void sharemind_executable_unit_header_0x0_init(
-        Sharemind_Executable_Unit_Header_0x0 * header,
+void SharemindExecutableUnitHeader0x0_init(
+        SharemindExecutableUnitHeader0x0 * header,
         uint8_t sectionsMinusOne);
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_unit_header_0x0_read(
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(
         const void * from,
-        const Sharemind_Executable_Unit_Header_0x0 ** h)
+        const SharemindExecutableUnitHeader0x0 ** h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 
@@ -67,21 +67,21 @@ typedef struct __attribute__ ((__packed__)) {
     char type[32];
     uint32_t length;
     uint8_t zeroPadding[4];
-} Sharemind_Executable_Section_Header_0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Section_Header_0x0) == 32u + 4u + 4u);
+} SharemindExecutableSectionHeader0x0;
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableSectionHeader0x0) == 32u + 4u + 4u);
 
-void sharemind_executable_section_header_0x0_init(
-        Sharemind_Executable_Section_Header_0x0 * header,
+void SharemindExecutableSectionHeader0x0_init(
+        SharemindExecutableSectionHeader0x0 * header,
         SHAREMIND_EXECUTABLE_SECTION_TYPE type,
         uint32_t length);
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_section_header_0x0_read(
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableSectionHeader0x0_read(
         const void * from,
-        const Sharemind_Executable_Section_Header_0x0 ** h)
+        const SharemindExecutableSectionHeader0x0 ** h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
-SHAREMIND_EXECUTABLE_SECTION_TYPE sharemind_executable_section_header_0x0_type(
-        const Sharemind_Executable_Section_Header_0x0 * h)
+SHAREMIND_EXECUTABLE_SECTION_TYPE SharemindExecutableSectionHeader0x0_type(
+        const SharemindExecutableSectionHeader0x0 * h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H */

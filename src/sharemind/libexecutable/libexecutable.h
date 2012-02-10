@@ -22,10 +22,10 @@ typedef struct __attribute__ ((__packed__)) {
     char magic[32];
     uint64_t byteOrderVerification;
     uint16_t fileFormatVersion;
-} Sharemind_Executable_Common_Header;
-SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Common_Header) == 32 + 8 + 2);
+} SharemindExecutableCommonHeader;
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2);
 
-void sharemind_executable_common_header_init(Sharemind_Executable_Common_Header * h, uint16_t version);
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_common_header_read(const void * from, const Sharemind_Executable_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
+void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version);
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H */

@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <stddef.h>
 
-void sharemind_executable_header_0x0_init(Sharemind_Executable_Header_0x0 * header,
+void SharemindExecutableHeader0x0_init(SharemindExecutableHeader0x0 * header,
                          uint8_t numberOfUnitsMinusOne,
                          uint8_t activeLinkingUnit)
 {
@@ -21,12 +21,12 @@ void sharemind_executable_header_0x0_init(Sharemind_Executable_Header_0x0 * head
     __builtin_bzero(header->zeroPadding, 4);
 }
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_header_0x0_read(const void * from, const Sharemind_Executable_Header_0x0 ** h) {
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableHeader0x0_read(const void * from, const SharemindExecutableHeader0x0 ** h) {
     assert(from);
 
     union {
         const void * v;
-        const Sharemind_Executable_Header_0x0 * h;
+        const SharemindExecutableHeader0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
@@ -45,7 +45,7 @@ SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_header_0x0_read(const void 
 
 static const char luMagic[32] = "Linking Unit";
 
-void sharemind_executable_unit_header_0x0_init(Sharemind_Executable_Unit_Header_0x0 * header,
+void SharemindExecutableUnitHeader0x0_init(SharemindExecutableUnitHeader0x0 * header,
                               uint8_t sectionsMinusOne)
 {
     __builtin_memcpy(&header->type, luMagic, 32);
@@ -53,11 +53,11 @@ void sharemind_executable_unit_header_0x0_init(Sharemind_Executable_Unit_Header_
     __builtin_bzero(&header->zeroPadding, 7);
 }
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_unit_header_0x0_read(const void * from, const Sharemind_Executable_Unit_Header_0x0 ** h) {
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(const void * from, const SharemindExecutableUnitHeader0x0 ** h) {
     assert(from);
     union {
         const void * v;
-        const Sharemind_Executable_Unit_Header_0x0 * h;
+        const SharemindExecutableUnitHeader0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[7] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
@@ -79,7 +79,7 @@ static const char sMagic[SHAREMIND_EXECUTABLE_SECTION_TYPE_COUNT_0x0][32] = {
     "TEXT", "RODATA", "DATA", "BSS", "BIND", "DEBUG"
 };
 
-void sharemind_executable_section_header_0x0_init(Sharemind_Executable_Section_Header_0x0 * header,
+void SharemindExecutableSectionHeader0x0_init(SharemindExecutableSectionHeader0x0 * header,
                                  SHAREMIND_EXECUTABLE_SECTION_TYPE type,
                                  uint32_t length)
 {
@@ -90,11 +90,11 @@ void sharemind_executable_section_header_0x0_init(Sharemind_Executable_Section_H
     __builtin_bzero(header->zeroPadding, 4);
 }
 
-SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_section_header_0x0_read(const void * from, const Sharemind_Executable_Section_Header_0x0 ** h) {
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableSectionHeader0x0_read(const void * from, const SharemindExecutableSectionHeader0x0 ** h) {
     assert(from);
     union {
         const void * v;
-        const Sharemind_Executable_Section_Header_0x0 * h;
+        const SharemindExecutableSectionHeader0x0 * h;
     } c = { .v = from };
 
     static const uint8_t zeroPadding[4] = { 0u, 0u, 0u, 0u };
@@ -120,7 +120,7 @@ sharemind_executable_section_header_0x0_read_error:
     return SHAREMIND_EXECUTABLE_READ_ERROR_INVALID_DATA;
 }
 
-SHAREMIND_EXECUTABLE_SECTION_TYPE sharemind_executable_section_header_0x0_type(const Sharemind_Executable_Section_Header_0x0 * h) {
+SHAREMIND_EXECUTABLE_SECTION_TYPE SharemindExecutableSectionHeader0x0_type(const SharemindExecutableSectionHeader0x0 * h) {
     assert(h);
 
 #define MATCH_TYPE(e) \
