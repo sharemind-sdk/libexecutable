@@ -53,8 +53,8 @@ ENDFUNCTION(PREPARE_OTHER_FILES)
 SET(OTHER_FILES ${OTHER_FILES}
     "libexecutable/libexecutable_0x0.h"
     "libexecutable/libexecutable.h"
-    "libexecutable/sme_read_error.h"
-    "libexecutable/sme_section_type.h")
+    "libexecutable/sharemind_executable_read_error.h"
+    "libexecutable/sharemind_executable_section_type.h")
 
 PREPARE_OTHER_FILES()
 ADD_LIBRARY("libexecutable" SHARED

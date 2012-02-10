@@ -1,0 +1,30 @@
+/*
+ * This file is a part of the Sharemind framework.
+ * Copyright (C) Cybernetica AS
+ *
+ * All rights are reserved. Reproduction in whole or part is prohibited
+ * without the written consent of the copyright owner. The usage of this
+ * code is subject to the appropriate license agreement.
+ */
+
+#ifndef SHAREMIND_LIBEXECUTABLE_SHAREMIND_EXECUTABLE_SECTION_TYPE_H
+#define SHAREMIND_LIBEXECUTABLE_SHAREMIND_EXECUTABLE_SECTION_TYPE_H
+
+#include <sharemind/preprocessor.h>
+
+
+#define SHAREMIND_EXECUTABLE_ENUM_SECTION_TYPE \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_INVALID, = -1)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_TEXT, = 0)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_RODATA, = 1)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_DATA, = 2)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_BSS, = 3)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_BIND, = 4)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_PDBIND, = 5)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_DEBUG, = 6)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_COUNT_0x0, = 7)) \
+    ((SHAREMIND_EXECUTABLE_SECTION_TYPE_COUNT, = 7))
+SM_ENUM_CUSTOM_DEFINE(SHAREMIND_EXECUTABLE_SECTION_TYPE,
+                      SHAREMIND_EXECUTABLE_ENUM_SECTION_TYPE);
+
+#endif /* SHAREMIND_LIBEXECUTABLE_SHAREMIND_EXECUTABLE_SECTION_TYPE_H */
