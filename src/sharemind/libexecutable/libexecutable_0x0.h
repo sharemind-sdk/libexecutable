@@ -25,7 +25,7 @@ typedef struct __attribute__ ((__packed__)) {
     uint8_t activeLinkingUnit;
     uint8_t zeroPadding[4];
 } Sharemind_Executable_Header_0x0;
-SM_STATIC_ASSERT(sizeof(Sharemind_Executable_Header_0x0) == 1u + 1u + 4u);
+SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Header_0x0) == 1u + 1u + 4u);
 
 void sharemind_executable_header_0x0_init(
         Sharemind_Executable_Header_0x0 * header,
@@ -47,7 +47,7 @@ typedef struct __attribute__ ((__packed__)) {
     uint8_t sectionsMinusOne;
     uint8_t zeroPadding[7];
 } Sharemind_Executable_Unit_Header_0x0;
-SM_STATIC_ASSERT(sizeof(Sharemind_Executable_Unit_Header_0x0) == 32u + 1u + 7u);
+SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Unit_Header_0x0) == 32u + 1u + 7u);
 
 void sharemind_executable_unit_header_0x0_init(
         Sharemind_Executable_Unit_Header_0x0 * header,
@@ -68,7 +68,7 @@ typedef struct __attribute__ ((__packed__)) {
     uint32_t length;
     uint8_t zeroPadding[4];
 } Sharemind_Executable_Section_Header_0x0;
-SM_STATIC_ASSERT(sizeof(Sharemind_Executable_Section_Header_0x0) == 32u + 4u + 4u);
+SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Section_Header_0x0) == 32u + 4u + 4u);
 
 void sharemind_executable_section_header_0x0_init(
         Sharemind_Executable_Section_Header_0x0 * header,

@@ -23,7 +23,7 @@ typedef struct __attribute__ ((__packed__)) {
     uint64_t byteOrderVerification;
     uint16_t fileFormatVersion;
 } Sharemind_Executable_Common_Header;
-SM_STATIC_ASSERT(sizeof(Sharemind_Executable_Common_Header) == 32 + 8 + 2);
+SHAREMIND_STATIC_ASSERT(sizeof(Sharemind_Executable_Common_Header) == 32 + 8 + 2);
 
 void sharemind_executable_common_header_init(Sharemind_Executable_Common_Header * h, uint16_t version);
 SHAREMIND_EXECUTABLE_READ_ERROR sharemind_executable_common_header_read(const void * from, const Sharemind_Executable_Common_Header ** h)  __attribute__ ((nonnull(1), warn_unused_result));
