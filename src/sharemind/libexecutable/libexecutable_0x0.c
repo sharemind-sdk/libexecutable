@@ -76,7 +76,7 @@ SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(const void
 }
 
 static const char sMagic[SHAREMIND_EXECUTABLE_SECTION_TYPE_COUNT_0x0][32] = {
-    "TEXT", "RODATA", "DATA", "BSS", "BIND", "DEBUG"
+    "TEXT", "RODATA", "DATA", "BSS", "BIND", "PDBIND", "DEBUG"
 };
 
 void SharemindExecutableSectionHeader0x0_init(SharemindExecutableSectionHeader0x0 * header,
