@@ -11,6 +11,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION "2.8")
 CMAKE_POLICY(SET CMP0015 NEW)
 PROJECT("SHAREMIND_LIBEXECUTABLE" "C" "CXX")
 
+# Find boost - seems to be required since the variables aren't populated otherwise
+FIND_PACKAGE(Boost REQUIRED)
+
 IF(NOT SHAREMIND_LIB_DIR)
     MESSAGE(FATAL_ERROR "SHAREMIND_LIB_DIR not defined!")
 ENDIF(NOT SHAREMIND_LIB_DIR)
@@ -25,7 +28,7 @@ ENDIF(NOT SHAREMIND_EXT_VM_GLOBALS_DIR)
 IF(NOT IS_DIRECTORY "${SHAREMIND_EXT_VM_GLOBALS_DIR}/include/sharemind")
     MESSAGE(FATAL "SHAREMIND_EXT_VM_GLOBALS_DIR is invalid!")
 ENDIF()
-INCLUDE_DIRECTORIES(BEFORE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/../sharemind/.." "${SHAREMIND_EXT_VM_GLOBALS_DIR}/include")
+INCLUDE_DIRECTORIES(BEFORE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/../sharemind/.." "${SHAREMIND_EXT_VM_GLOBALS_DIR}/include" ${Boost_INCLUDE_DIRS})
 
 
 SET(CMAKE_C_FLAGS "-std=gnu99 -Wall -Wextra -O2 -fstrict-aliasing -Wstrict-aliasing=1 -fwrapv -Wabi -Wbad-function-cast -Wc++-compat -Wformat -Wswitch-default -Wunused -Wfloat-equal -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wconversion -Wsign-conversion -Wlogical-op -Wunused-macros")
