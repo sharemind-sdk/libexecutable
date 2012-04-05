@@ -18,12 +18,13 @@
 
 #define SHAREMIND_EXECUTABLE_VERSION_SUPPORTED 0x0u
 
-typedef struct __attribute__ ((__packed__)) {
+typedef struct {
     char magic[32];
     uint64_t byteOrderVerification;
     uint16_t fileFormatVersion;
+    uint8_t zeroPadding[6];
 } SharemindExecutableCommonHeader;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2);
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2 + 6);
 
 void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version);
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h)  __attribute__ ((nonnull(1), warn_unused_result));

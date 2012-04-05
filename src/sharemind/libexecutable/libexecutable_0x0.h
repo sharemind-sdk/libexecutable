@@ -20,12 +20,12 @@
   Format 0x0 header.
 *******************************************************************************/
 
-typedef struct __attribute__ ((__packed__)) {
+typedef struct {
     uint8_t numberOfUnitsMinusOne;
     uint8_t activeLinkingUnit;
-    uint8_t zeroPadding[4];
+    uint8_t zeroPadding[6];
 } SharemindExecutableHeader0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableHeader0x0) == 1u + 1u + 4u);
+SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableHeader0x0) == 1u + 1u + 6u);
 
 void SharemindExecutableHeader0x0_init(
         SharemindExecutableHeader0x0 * header,
@@ -42,7 +42,7 @@ SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableHeader0x0_read(
   Format 0x0 unit header.
 *******************************************************************************/
 
-typedef struct __attribute__ ((__packed__)) {
+typedef struct {
     char type[32];
     uint8_t sectionsMinusOne;
     uint8_t zeroPadding[7];
@@ -63,7 +63,7 @@ SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(
   Format 0x0 section header.
 *******************************************************************************/
 
-typedef struct __attribute__ ((__packed__)) {
+typedef struct {
     char type[32];
     uint32_t length;
     uint8_t zeroPadding[4];
