@@ -54,7 +54,8 @@ SET_TARGET_PROPERTIES("libexecutable" PROPERTIES
                       SOVERSION "0.1")
 
 INSTALL(TARGETS "libexecutable"
-        LIBRARY DESTINATION "lib")
+        LIBRARY DESTINATION "lib"
+        ARCHIVE DESTINATION "lib")
 
 INSTALL(FILES ${SHAREMIND_LIBEXECUTABLE_HEADERS}
         DESTINATION "include/sharemind/libexecutable")
