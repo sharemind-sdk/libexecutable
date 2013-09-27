@@ -74,9 +74,8 @@ SET(LIBEXECUTABLE_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfig.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake" @ONLY)
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
-        DESTINATION "lib/sharemindlibexecutable")
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfigVersion.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake" @ONLY)
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
-        DESTINATION "lib/sharemindlibexecutable")
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
+        DESTINATION "lib/SharemindLibexecutable")
