@@ -69,7 +69,7 @@ INSTALL(FILES ${SHAREMIND_LIBEXECUTABLE_HEADERS}
 # Install cmake files:
 FILE(GLOB_RECURSE sharemind_libexecutable_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
 ADD_CUSTOM_TARGET("include_sharemind_libexecutable_in_files_in_IDE" SOURCES ${sharemind_libexecutable_in_files})
-SET(LIBEXECUTABLE_INSTALL_LINK_LIBRARIES "-lsharemind_executable")
+SET(LIBEXECUTABLE_INSTALL_LINK_LIBRARIES "-L${CMAKE_INSTALL_PREFIX}/lib" "-lsharemind_executable")
 SET(LIBEXECUTABLE_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfig.cmake.in"
