@@ -30,7 +30,8 @@ ENDMACRO(FLAGS_MAGIC)
 FLAGS_MAGIC("Weverything")
 FLAGS_MAGIC("Wlogical-op")
 
-ADD_DEFINITIONS("-D_XOPEN_SOURCE=500" "-D__STDC_LIMIT_MACROS")
+SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS")
+ADD_DEFINITIONS("${LIBEXECUTABLE_INSTALL_DEFINITIONS}")
 
 ################################################################################
 # libexecutable
@@ -52,9 +53,10 @@ ADD_LIBRARY("libexecutable" ${SHAREMIND_LIBEXECUTABLE_LINKING_MODE}
             "libexecutable/libexecutable_0x0.c"
             ${SHAREMIND_LIBEXECUTABLE_HEADERS})
 
+SET(LIBEXECUTABLE_VERSION "0.1.0.0")
 SET_TARGET_PROPERTIES("libexecutable" PROPERTIES
                       OUTPUT_NAME "sharemind_executable"
-                      VERSION "0.1.0.0"
+                      VERSION "${LIBEXECUTABLE_VERSION}"
                       SOVERSION "0.1")
 
 INSTALL(TARGETS "libexecutable"
@@ -63,3 +65,18 @@ INSTALL(TARGETS "libexecutable"
 
 INSTALL(FILES ${SHAREMIND_LIBEXECUTABLE_HEADERS}
         DESTINATION "include/sharemind/libexecutable")
+
+# Install cmake files:
+FILE(GLOB_RECURSE sharemind_libexecutable_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
+ADD_CUSTOM_TARGET("include_sharemind_libexecutable_in_files_in_IDE" SOURCES ${sharemind_libexecutable_in_files})
+SET(LIBEXECUTABLE_INSTALL_LINK_LIBRARIES "-lsharemind_executable")
+SET(LIBEXECUTABLE_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
+
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfig.cmake.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake" @ONLY)
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
+        DESTINATION "lib/sharemindlibexecutable")
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfigVersion.cmake.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake" @ONLY)
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
+        DESTINATION "lib/sharemindlibexecutable")

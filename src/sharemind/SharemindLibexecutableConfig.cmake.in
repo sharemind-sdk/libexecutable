@@ -1,0 +1,17 @@
+#
+# Copyright (C) Cybernetica AS
+#
+# All rights are reserved. Reproduction in whole or part is prohibited
+# without the written consent of the copyright owner. The usage of this
+# code is subject to the appropriate license agreement.
+#
+
+# This file defines the following variables:
+#   SharemindLibexecutable_INCLUDE_DIRS - include directories
+#   SharemindLibexecutable_LIBRARIES    - libraries to link against
+#   SharemindLibexecutable_DEFINITIONS  - required compiler definitions
+
+
+SET(SharemindLibexecutable_INCLUDE_DIRS @LIBEXECUTABLE_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibexecutable_LIBRARIES @LIBEXECUTABLE_INSTALL_LINK_LIBRARIES@)
+SET(SharemindLibexecutable_DEFINITIONS @LIBEXECUTABLE_INSTALL_DEFINITIONS@)
