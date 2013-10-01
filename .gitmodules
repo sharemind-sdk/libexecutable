@@ -1,0 +1,3 @@
+[submodule "ext/vm_globals"]
+	path = ext/vm_globals
+	url = ssh://intranet.cyber.ee/export/samba/dokumendipuu/teadus/sevilla/repo/platform/vm_globals.git
