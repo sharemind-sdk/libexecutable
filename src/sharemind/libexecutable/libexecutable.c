@@ -19,6 +19,7 @@ void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, u
     __builtin_memcpy(h->magic, magic, 32);
     h->byteOrderVerification = 0x0123456789abcdef;
     h->fileFormatVersion = version;
+    __builtin_bzero(h->zeroPadding, 6);
 }
 
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h) {
@@ -43,6 +44,12 @@ SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void 
 
     if (c.h->fileFormatVersion > SHAREMIND_EXECUTABLE_VERSION_SUPPORTED) {
         err = SHAREMIND_EXECUTABLE_READ_ERROR_VERSION_NOT_SUPPORTED;
+        goto sharemind_executable_common_header_read_error;
+    }
+
+    static const uint8_t zeroPadding[6u] = { 0u, 0u, 0u, 0u, 0u, 0u };
+    if (__builtin_memcmp(zeroPadding, c.h->zeroPadding, 6) != 0) {
+        err = SHAREMIND_EXECUTABLE_READ_ERROR_INVALID_DATA;
         goto sharemind_executable_common_header_read_error;
     }
 
