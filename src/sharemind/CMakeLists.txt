@@ -39,7 +39,7 @@ ENDMACRO(FLAGS_MAGIC)
 FLAGS_MAGIC("Weverything")
 FLAGS_MAGIC("Wlogical-op")
 
-SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS")
+SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -D_BSD_SOURCE")
 ADD_DEFINITIONS("${LIBEXECUTABLE_INSTALL_DEFINITIONS}")
 
 ################################################################################
@@ -48,6 +48,7 @@ ADD_DEFINITIONS("${LIBEXECUTABLE_INSTALL_DEFINITIONS}")
 
 
 SET(SHAREMIND_LIBEXECUTABLE_HEADERS
+    "libexecutable/endianmacros.h"
     "libexecutable/libexecutable_0x0.h"
     "libexecutable/libexecutable.h"
     "libexecutable/sharemind_executable_read_error.h"

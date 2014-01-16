@@ -11,55 +11,62 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
+#include "endianmacros.h"
 
 
 static const char magic[32] = "Sharemind Executable";
 
-void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version) {
+void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h,
+                                          uint16_t version)
+{
     __builtin_memcpy(h->magic, magic, 32);
-    h->byteOrderVerification = 0x0123456789abcdef;
-    h->fileFormatVersion = version;
+    h->byteOrderVerification = htole64(UINT64_C(0x0123456789abcdef));
+    h->fileFormatVersion = htole16(version);
     __builtin_bzero(h->zeroPadding, 6);
 }
 
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h) {
+static const uint8_t zeroPadding[6u] = { 0u, 0u, 0u, 0u, 0u, 0u };
+
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(
+        const void * from,
+        SharemindExecutableCommonHeader * to)
+{
     assert(from);
 
-    union {
-        const void * v;
-        const SharemindExecutableCommonHeader * h;
-    } c = { .v = from };
+    SharemindExecutableCommonHeader buf;
+    __builtin_memcpy(&buf, from, sizeof(SharemindExecutableCommonHeader));
+    buf.byteOrderVerification = le64toh(buf.byteOrderVerification);
+    buf.fileFormatVersion = le16toh(buf.fileFormatVersion);
+
     SHAREMIND_EXECUTABLE_READ_ERROR err;
 
-    if (__builtin_memcmp(c.h->magic, magic, 32) != 0) {
+    if (__builtin_memcmp(buf.magic, magic, 32) != 0) {
         err = SHAREMIND_EXECUTABLE_READ_ERROR_MAGIC;
         goto sharemind_executable_common_header_read_error;
     }
 
-    static const unsigned char byteOrderVerification[8] = { 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01 };
-    if (__builtin_memcmp(&c.h->byteOrderVerification, byteOrderVerification, 8) != 0) {
+    if (buf.byteOrderVerification != UINT64_C(0x0123456789abcdef)) {
         err = SHAREMIND_EXECUTABLE_READ_ERROR_BYTE_ORDER_VERIFICATION;
         goto sharemind_executable_common_header_read_error;
     }
 
-    if (c.h->fileFormatVersion > SHAREMIND_EXECUTABLE_VERSION_SUPPORTED) {
+    if (buf.fileFormatVersion > SHAREMIND_EXECUTABLE_VERSION_SUPPORTED) {
         err = SHAREMIND_EXECUTABLE_READ_ERROR_VERSION_NOT_SUPPORTED;
         goto sharemind_executable_common_header_read_error;
     }
 
-    static const uint8_t zeroPadding[6u] = { 0u, 0u, 0u, 0u, 0u, 0u };
-    if (__builtin_memcmp(zeroPadding, c.h->zeroPadding, 6) != 0) {
+    if (__builtin_memcmp(buf.zeroPadding, zeroPadding, 6u) != 0) {
         err = SHAREMIND_EXECUTABLE_READ_ERROR_INVALID_DATA;
         goto sharemind_executable_common_header_read_error;
     }
 
-    if (h)
-        (*h) = c.h;
+    if (to)
+        __builtin_memcpy(to, &buf, sizeof(SharemindExecutableCommonHeader));
+
     return SHAREMIND_EXECUTABLE_READ_OK;
 
 sharemind_executable_common_header_read_error:
 
-    if (h)
-        (*h) = NULL;
     return err;
 }

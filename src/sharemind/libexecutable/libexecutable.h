@@ -27,6 +27,6 @@ typedef struct {
 SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2 + 6);
 
 void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version);
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, const SharemindExecutableCommonHeader ** h)  __attribute__ ((nonnull(1), warn_unused_result));
+SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, SharemindExecutableCommonHeader * h)  __attribute__ ((nonnull(1), warn_unused_result));
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H */

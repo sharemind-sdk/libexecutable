@@ -34,7 +34,7 @@ void SharemindExecutableHeader0x0_init(
 
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableHeader0x0_read(
         const void * from,
-        const SharemindExecutableHeader0x0 ** h)
+        SharemindExecutableHeader0x0 * h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 
@@ -55,7 +55,7 @@ void SharemindExecutableUnitHeader0x0_init(
 
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(
         const void * from,
-        const SharemindExecutableUnitHeader0x0 ** h)
+        SharemindExecutableUnitHeader0x0 * h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 
@@ -77,7 +77,7 @@ void SharemindExecutableSectionHeader0x0_init(
 
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableSectionHeader0x0_read(
         const void * from,
-        const SharemindExecutableSectionHeader0x0 ** h)
+        SharemindExecutableSectionHeader0x0 * h)
     __attribute__ ((nonnull(1), warn_unused_result));
 
 SHAREMIND_EXECUTABLE_SECTION_TYPE SharemindExecutableSectionHeader0x0_type(
