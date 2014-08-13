@@ -10,14 +10,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
 PROJECT("SHAREMIND_LIBEXECUTABLE" "C")
 
-FOREACH(dir IN LISTS CMAKE_PREFIX_PATH)
-  INCLUDE_DIRECTORIES(BEFORE SYSTEM "${dir}/include")
-ENDFOREACH()
-INCLUDE_DIRECTORIES(BEFORE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/../")
-
-# Find boost - seems to be required since the variables aren't populated otherwise
 FIND_PACKAGE(Boost REQUIRED)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+FIND_PACKAGE(SharemindVmGlobals REQUIRED)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS}
+                    ${SharemindVmGlobals_INCLUDE_DIRS})
 
 ADD_COMPILE_OPTIONS(
   "-std=c99" "-O2" "-fwrapv" "-Wall" "-Wextra" "-Wunused" "-Wabi"
@@ -41,8 +37,11 @@ ENDFUNCTION()
 CHECK_ADD_COMPILER_FLAG("-Weverything")
 CHECK_ADD_COMPILER_FLAG("-Wlogical-op")
 
-SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -D_BSD_SOURCE")
-ADD_DEFINITIONS("${LIBEXECUTABLE_INSTALL_DEFINITIONS}")
+SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS"
+                                      "-D__STDC_CONSTANT_MACROS"
+                                      "-D_BSD_SOURCE")
+ADD_DEFINITIONS(${SharemindVmGlobals_DEFINITIONS}
+                ${LIBEXECUTABLE_INSTALL_DEFINITIONS})
 
 
 ################################################################################
