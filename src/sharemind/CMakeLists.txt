@@ -10,6 +10,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
 PROJECT("SHAREMIND_LIBEXECUTABLE" "C")
 
+SET(LIBEXECUTABLE_VERSION "0.1.0.0")
+
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
@@ -51,23 +53,17 @@ ADD_DEFINITIONS(${SharemindVmGlobals_DEFINITIONS}
 # libexecutable
 ################################################################################
 
-SET(SHAREMIND_LIBEXECUTABLE_HEADERS
-    "libexecutable/endianmacros.h"
-    "libexecutable/libexecutable_0x0.h"
-    "libexecutable/libexecutable.h"
-    "libexecutable/sharemind_executable_read_error.h"
-    "libexecutable/sharemind_executable_section_type.h")
-
+FILE(GLOB_RECURSE SHAREMIND_LIBEXECUTABLE_HEADERS
+                  "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+FILE(GLOB_RECURSE SHAREMIND_LIBEXECUTABLE_SOURCES
+                  "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
 IF(NOT SHAREMIND_LIBEXECUTABLE_LINKING_MODE)
     SET(SHAREMIND_LIBEXECUTABLE_LINKING_MODE SHARED)
 ENDIF()
-
 ADD_LIBRARY("libexecutable" ${SHAREMIND_LIBEXECUTABLE_LINKING_MODE}
-            "libexecutable/libexecutable.c"
-            "libexecutable/libexecutable_0x0.c"
+            ${SHAREMIND_LIBEXECUTABLE_SOURCES}
             ${SHAREMIND_LIBEXECUTABLE_HEADERS})
 
-SET(LIBEXECUTABLE_VERSION "0.1.0.0")
 SET_TARGET_PROPERTIES("libexecutable" PROPERTIES
                       OUTPUT_NAME "sharemind_executable"
                       VERSION "${LIBEXECUTABLE_VERSION}"
