@@ -77,15 +77,23 @@ INSTALL(FILES ${SHAREMIND_LIBEXECUTABLE_HEADERS}
         DESTINATION "include/sharemind/libexecutable")
 
 # Install cmake files:
-FILE(GLOB_RECURSE sharemind_libexecutable_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
-ADD_CUSTOM_TARGET("include_sharemind_libexecutable_in_files_in_IDE" SOURCES ${sharemind_libexecutable_in_files})
-SET(LIBEXECUTABLE_INSTALL_LINK_LIBRARIES "-L${CMAKE_INSTALL_PREFIX}/lib" "-lsharemind_executable")
+FILE(GLOB_RECURSE sharemind_libexecutable_in_files
+                  "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
+ADD_CUSTOM_TARGET("include_sharemind_libexecutable_in_files_in_IDE"
+                  SOURCES ${sharemind_libexecutable_in_files})
+SET(LIBEXECUTABLE_INSTALL_LINK_LIBRARIES "-L${CMAKE_INSTALL_PREFIX}/lib"
+                                         "-lsharemind_executable")
 SET(LIBEXECUTABLE_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
 
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfig.cmake.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake" @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfigVersion.cmake.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake" @ONLY)
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
-        DESTINATION "lib/SharemindLibexecutable")
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake" @ONLY)
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/SharemindLibexecutableConfigVersion.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
+    @ONLY)
+INSTALL(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
+    DESTINATION "lib/SharemindLibexecutable")
