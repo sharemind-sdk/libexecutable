@@ -20,9 +20,9 @@
 #include "libexecutable_0x0.h"
 
 #include <assert.h>
+#include <sharemind/endian.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "endianmacros.h"
 
 static const uint8_t zeroPadding[7u] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
 

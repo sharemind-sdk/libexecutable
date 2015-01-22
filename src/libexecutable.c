@@ -20,9 +20,9 @@
 #include "libexecutable.h"
 
 #include <assert.h>
+#include <sharemind/endian.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "endianmacros.h"
 
 
 static const char magic[32] = "Sharemind Executable";
