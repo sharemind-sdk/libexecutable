@@ -54,7 +54,8 @@ CHECK_ADD_COMPILER_FLAG("-Wlogical-op")
 
 SET(LIBEXECUTABLE_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS"
                                       "-D__STDC_CONSTANT_MACROS"
-                                      "-D_BSD_SOURCE")
+                                      "-D_BSD_SOURCE"
+                                      "-D_DEFAULT_SOURCE")
 ADD_DEFINITIONS(${SharemindCHeaders_DEFINITIONS}
                 ${LIBEXECUTABLE_INSTALL_DEFINITIONS})
 
