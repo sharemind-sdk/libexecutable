@@ -20,11 +20,14 @@
 #ifndef SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H
 #define SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H
 
+#include <sharemind/extern_c.h>
 #include <sharemind/static_assert.h>
 #include <stdint.h>
 #include "sharemind_executable_read_error.h"
 #include "sharemind_executable_section_type.h"
 
+
+SHAREMIND_EXTERN_C_BEGIN
 
 #define SHAREMIND_EXECUTABLE_VERSION_SUPPORTED 0x0u
 
@@ -38,5 +41,7 @@ SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2 + 
 
 void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version);
 SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, SharemindExecutableCommonHeader * h)  __attribute__ ((nonnull(1), warn_unused_result));
+
+SHAREMIND_EXTERN_C_END
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H */

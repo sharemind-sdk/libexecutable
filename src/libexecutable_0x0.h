@@ -20,11 +20,14 @@
 #ifndef SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H
 #define SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H
 
+#include <sharemind/extern_c.h>
 #include <sharemind/static_assert.h>
 #include <stdint.h>
 #include "sharemind_executable_read_error.h"
 #include "sharemind_executable_section_type.h"
 
+
+SHAREMIND_EXTERN_C_BEGIN
 
 /*******************************************************************************
   Format 0x0 header.
@@ -93,5 +96,7 @@ SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableSectionHeader0x0_read(
 SHAREMIND_EXECUTABLE_SECTION_TYPE SharemindExecutableSectionHeader0x0_type(
         const SharemindExecutableSectionHeader0x0 * h)
     __attribute__ ((nonnull(1), warn_unused_result));
+
+SHAREMIND_EXTERN_C_END
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H */
