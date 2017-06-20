@@ -20,7 +20,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
 PROJECT("SHAREMIND_LIBEXECUTABLE" "C")
 
-SET(LIBEXECUTABLE_VERSION "0.1.0.0")
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(LIBEXECUTABLE_VERSION
+    "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
@@ -81,11 +85,13 @@ SET_TARGET_PROPERTIES("libexecutable" PROPERTIES
                       SOVERSION "0.1")
 
 INSTALL(TARGETS "libexecutable"
+        COMPONENT lib
         LIBRARY DESTINATION "lib"
         ARCHIVE DESTINATION "lib")
 
 INSTALL(FILES ${SHAREMIND_LIBEXECUTABLE_HEADERS}
-        DESTINATION "include/sharemind/libexecutable")
+        DESTINATION "include/sharemind/libexecutable"
+        COMPONENT dev)
 
 # Install cmake files:
 FILE(GLOB_RECURSE sharemind_libexecutable_in_files
@@ -107,4 +113,27 @@ INSTALL(
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/SharemindLibexecutableConfigVersion.cmake"
-    DESTINATION "lib/SharemindLibexecutable")
+    DESTINATION "lib/SharemindLibexecutable"
+    COMPONENT dev)
+
+
+# Packaging:
+SET(CPACK_PACKAGE_VENDOR "Cybernetica AS")
+SET(CPACK_PACKAGE_CONTACT "Sharemind packaging <sharemind-packaging@cyber.ee>")
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_DEBIAN_PACKAGE_NAME "libsharemind-libexecutable")
+SET(CPACK_DEBIAN_PACKAGE_RELEASE "cyber1")
+SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
+SET(CPACK_DEB_COMPONENT_INSTALL "ON")
+SET(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
+
+SET(CPACK_DEBIAN_LIB_PACKAGE_NAME "libsharemind-libexecutable")
+SET(CPACK_COMPONENT_DEV_DESCRIPTION
+    "Sharemind Executable library development headers")
+SET(CPACK_COMPONENT_LIB_DESCRIPTION "Sharemind Executable library")
+SET(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libsharemind-cheaders-dev (>= 0.1.0), libc6-dev (>= 2.19)")
+SET(CPACK_DEBIAN_LIB_PACKAGE_DEPENDS "libc6 (>= 2.19)")
+SET(CPACK_DEBIAN_DEV_PACKAGE_SECTION "libdevel")
+SET(CPACK_DEBIAN_LIB_PACKAGE_SECTION "libs")
+SET(CPACK_DEBIAN_DEV_PACKAGE_ARCHITECTURE "any")
+INCLUDE(CPack)
