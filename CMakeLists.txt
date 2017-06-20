@@ -131,7 +131,7 @@ SET(CPACK_DEBIAN_LIB_PACKAGE_NAME "libsharemind-executable")
 SET(CPACK_COMPONENT_DEV_DESCRIPTION
     "Sharemind Executable library development headers")
 SET(CPACK_COMPONENT_LIB_DESCRIPTION "Sharemind Executable library")
-SET(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libsharemind-cheaders-dev (>= 0.1.0), libc6-dev (>= 2.19)")
+SET(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libsharemind-executable (= ${LIBEXECUTABLE_VERSION}), libsharemind-cheaders-dev (>= 0.1.0), libc6-dev (>= 2.19)")
 SET(CPACK_DEBIAN_LIB_PACKAGE_DEPENDS "libc6 (>= 2.19)")
 SET(CPACK_DEBIAN_DEV_PACKAGE_SECTION "libdevel")
 SET(CPACK_DEBIAN_LIB_PACKAGE_SECTION "libs")
