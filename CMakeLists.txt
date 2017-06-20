@@ -121,13 +121,13 @@ INSTALL(
 SET(CPACK_PACKAGE_VENDOR "Cybernetica AS")
 SET(CPACK_PACKAGE_CONTACT "Sharemind packaging <sharemind-packaging@cyber.ee>")
 SET(CPACK_GENERATOR "DEB")
-SET(CPACK_DEBIAN_PACKAGE_NAME "libsharemind-libexecutable")
+SET(CPACK_DEBIAN_PACKAGE_NAME "libsharemind-executable")
 SET(CPACK_DEBIAN_PACKAGE_RELEASE "cyber1")
 SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
 SET(CPACK_DEB_COMPONENT_INSTALL "ON")
 SET(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
 
-SET(CPACK_DEBIAN_LIB_PACKAGE_NAME "libsharemind-libexecutable")
+SET(CPACK_DEBIAN_LIB_PACKAGE_NAME "libsharemind-executable")
 SET(CPACK_COMPONENT_DEV_DESCRIPTION
     "Sharemind Executable library development headers")
 SET(CPACK_COMPONENT_LIB_DESCRIPTION "Sharemind Executable library")
