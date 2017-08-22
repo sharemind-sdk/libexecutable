@@ -17,8 +17,8 @@
 # For further information, please contact us at sharemind@cyber.ee.
 #
 
-SET(PACKAGE_VERSION "@LIBEXECUTABLE_VERSION@")
-IF(NOT SharemindLibexecutable_QUIET)
+SET(PACKAGE_VERSION "@SharemindLibExecutable_VERSION@")
+IF(NOT SharemindLibExecutable_QUIET)
     MESSAGE(STATUS "Sharemind libexecutable version: ${PACKAGE_VERSION}")
 ENDIF()
 

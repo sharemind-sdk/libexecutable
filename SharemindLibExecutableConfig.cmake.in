@@ -18,11 +18,11 @@
 #
 
 # This file defines the following variables:
-#   SharemindLibexecutable_INCLUDE_DIRS - include directories
-#   SharemindLibexecutable_LIBRARIES    - libraries to link against
-#   SharemindLibexecutable_DEFINITIONS  - required compiler definitions
+#   SharemindLibExecutable_INCLUDE_DIRS - include directories
+#   SharemindLibExecutable_LIBRARIES    - libraries to link against
+#   SharemindLibExecutable_DEFINITIONS  - required compiler definitions
 
 
-SET(SharemindLibexecutable_INCLUDE_DIRS @LIBEXECUTABLE_INSTALL_INCLUDE_DIRS@)
-SET(SharemindLibexecutable_LIBRARIES @LIBEXECUTABLE_INSTALL_LINK_LIBRARIES@)
-SET(SharemindLibexecutable_DEFINITIONS @LIBEXECUTABLE_INSTALL_DEFINITIONS@)
+SET(SharemindLibExecutable_INCLUDE_DIRS @SharemindLibExecutable_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibExecutable_LIBRARIES @SharemindLibExecutable_INSTALL_LINK_LIBRARIES@)
+SET(SharemindLibExecutable_DEFINITIONS @SharemindLibExecutable_INSTALL_DEFINITIONS@)
