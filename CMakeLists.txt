@@ -57,15 +57,21 @@ INSTALL(FILES ${SharemindLibExecutable_HEADERS}
         COMPONENT dev)
 
 # Install cmake files:
-SET(SharemindLibExecutable_INSTALL_INCLUDE_DIRS
-    "${CMAKE_INSTALL_PREFIX}/include")
-SET(SharemindLibExecutable_INSTALL_LINK_LIBRARIES
-    "-L${CMAKE_INSTALL_PREFIX}/lib" "-lsharemind_executable")
-SET(SharemindLibExecutable_INSTALL_DEFINITIONS "-D__STDC_LIMIT_MACROS"
-                                               "-D__STDC_CONSTANT_MACROS"
-                                               "-D_BSD_SOURCE"
-                                               "-D_DEFAULT_SOURCE")
-SharemindUseCMakeFindFiles()
+SharemindCreateCMakeFindFiles(
+    INCLUDE_DIRS
+        "${CMAKE_INSTALL_PREFIX}/include"
+        ${Boost_INCLUDE_DIRS}
+        ${SharemindCHeaders_INCLUDE_DIRS}
+    DEFINITIONS
+        ${SharemindCHeaders_DEFINITIONS}
+        "-D__STDC_LIMIT_MACROS"
+        "-D__STDC_CONSTANT_MACROS"
+        "-D_BSD_SOURCE"
+        "-D_DEFAULT_SOURCE"
+    LIBRARIES
+        "-L${CMAKE_INSTALL_PREFIX}/lib"
+        "-lsharemind_executable"
+)
 
 
 # Packaging:
