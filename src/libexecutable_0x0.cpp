@@ -137,11 +137,11 @@ bool ExecutableSectionHeader0x0::isValid() const noexcept {
     return true;
 }
 
-bool ExecutableSectionHeader0x0::deserializeFrom(void const * from) noexcept {
-    assert(from);
+bool ExecutableSectionHeader0x0::deserializeFrom(void const * data) noexcept {
+    assert(data);
 
     ExecutableSectionHeader0x0 buf;
-    std::memcpy(&buf, from, sizeof(buf));
+    std::memcpy(&buf, data, sizeof(buf));
     if (!buf.isValid())
         return false;
     (*this) = std::move(buf);
