@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Cybernetica
+ * Copyright (C) Cybernetica
  *
  * Research/Commercial License Usage
  * Licensees holding a valid Research License or Commercial License
@@ -20,83 +20,154 @@
 #ifndef SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H
 #define SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H
 
-#include <sharemind/extern_c.h>
-#include <sharemind/static_assert.h>
-#include <stdint.h>
-#include "sharemind_executable_read_error.h"
-#include "sharemind_executable_section_type.h"
+#include <array>
+#include <cstdint>
+#include <cstring>
+#include <sharemind/EndianMacros.h>
 
 
-SHAREMIND_EXTERN_C_BEGIN
+namespace sharemind {
 
 /*******************************************************************************
   Format 0x0 header.
 *******************************************************************************/
 
-typedef struct {
-    uint8_t numberOfUnitsMinusOne;
-    uint8_t activeLinkingUnit;
-    uint8_t zeroPadding[6];
-} SharemindExecutableHeader0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableHeader0x0) == 1u + 1u + 6u);
+class ExecutableHeader0x0 {
 
-void SharemindExecutableHeader0x0_init(
-        SharemindExecutableHeader0x0 * header,
-        uint8_t numberOfUnitsMinusOne,
-        uint8_t activeLinkingUnit);
+public: /* Types: */
 
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableHeader0x0_read(
-        const void * from,
-        SharemindExecutableHeader0x0 * h)
-    __attribute__ ((nonnull(1), warn_unused_result));
+    using NumLinkingUnitsSize = std::uint8_t;
+    using ActiveLinkingUnitIndex = NumLinkingUnitsSize;
+
+public: /* Methods: */
+
+    void init(NumLinkingUnitsSize numberOfUnitsMinusOne,
+              ActiveLinkingUnitIndex activeLinkingUnit) noexcept;
+
+    bool isValid() const noexcept;
+
+    void serializeTo(void * buffer) const noexcept
+    { std::memcpy(buffer, this, sizeof(*this)); }
+
+    bool deserializeFrom(void const * data) noexcept
+        __attribute__ ((nonnull(2), warn_unused_result));
+
+    NumLinkingUnitsSize numberOfLinkingUnitsMinusOne() const noexcept
+    { return m_numberOfLinkingUnitsMinusOne; }
+
+    void setNumberOfLinkingUnitsMinusOne(
+            NumLinkingUnitsSize const numberOfLinkingUnitsMinusOne) noexcept
+    { m_numberOfLinkingUnitsMinusOne = numberOfLinkingUnitsMinusOne; }
+
+    void setActiveLinkingUnitIndex(
+            ActiveLinkingUnitIndex const activeLinkingUnitIndex) noexcept
+    { m_activeLinkingUnitIndex = activeLinkingUnitIndex; }
+
+    ActiveLinkingUnitIndex activeLinkingUnitIndex() const noexcept
+    { return m_activeLinkingUnitIndex; }
+
+private: /* Fields: */
+
+    NumLinkingUnitsSize m_numberOfLinkingUnitsMinusOne;
+    ActiveLinkingUnitIndex m_activeLinkingUnitIndex;
+    std::array<char,
+               8u - ((sizeof(m_numberOfLinkingUnitsMinusOne)
+                      + sizeof(m_activeLinkingUnitIndex)) % 8u)>
+            m_zeroPadding;
+
+};
 
 
 /*******************************************************************************
   Format 0x0 unit header.
 *******************************************************************************/
 
-typedef struct {
-    char type[32];
-    uint8_t sectionsMinusOne;
-    uint8_t zeroPadding[7];
-} SharemindExecutableUnitHeader0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableUnitHeader0x0) == 32u + 1u + 7u);
+class ExecutableLinkingUnitHeader0x0 {
 
-void SharemindExecutableUnitHeader0x0_init(
-        SharemindExecutableUnitHeader0x0 * header,
-        uint8_t sectionsMinusOne);
+public: /* Types: */
 
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableUnitHeader0x0_read(
-        const void * from,
-        SharemindExecutableUnitHeader0x0 * h)
-    __attribute__ ((nonnull(1), warn_unused_result));
+    using NumSectionsSize = std::uint8_t;
+
+public: /* Methods: */
+
+    void init(NumSectionsSize sectionsMinusOne) noexcept;
+
+    bool isValid() const noexcept;
+
+    void serializeTo(void * buffer) const noexcept
+    { std::memcpy(buffer, this, sizeof(*this)); }
+
+    bool deserializeFrom(void const * data) noexcept
+        __attribute__ ((nonnull(2), warn_unused_result));
+
+    NumSectionsSize numberOfSectionsMinusOne() const noexcept
+    { return m_sectionsMinusOne; }
+
+    void setNumberOfSectionsMinusOne(NumSectionsSize const sectionsMinusOne)
+            noexcept
+    { m_sectionsMinusOne = sectionsMinusOne; }
+
+private: /* Fields: */
+
+    std::array<char, 32u> m_type;
+    NumSectionsSize m_sectionsMinusOne;
+    std::array<char, 8u - ((sizeof(m_type) + sizeof(m_sectionsMinusOne)) % 8u)>
+            m_zeroPadding;
+
+};
 
 
 /*******************************************************************************
   Format 0x0 section header.
 *******************************************************************************/
 
-typedef struct {
-    char type[32];
-    uint32_t length;
-    uint8_t zeroPadding[4];
-} SharemindExecutableSectionHeader0x0;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableSectionHeader0x0) == 32u + 4u + 4u);
+class ExecutableSectionHeader0x0 {
 
-void SharemindExecutableSectionHeader0x0_init(
-        SharemindExecutableSectionHeader0x0 * header,
-        SHAREMIND_EXECUTABLE_SECTION_TYPE type,
-        uint32_t length);
+public: /* Types: */
 
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableSectionHeader0x0_read(
-        const void * from,
-        SharemindExecutableSectionHeader0x0 * h)
-    __attribute__ ((nonnull(1), warn_unused_result));
+    using SizeType = std::uint32_t;
 
-SHAREMIND_EXECUTABLE_SECTION_TYPE SharemindExecutableSectionHeader0x0_type(
-        const SharemindExecutableSectionHeader0x0 * h)
-    __attribute__ ((nonnull(1), warn_unused_result));
+    enum class SectionType {
+        Invalid = -1,
+        Text = 0,
+        RoData = 1,
+        Data = 2,
+        Bss = 3,
+        Bind = 4,
+        PdBind = 5,
+        Debug = 6,
+        Count = 7
+    };
 
-SHAREMIND_EXTERN_C_END
+public: /* Methods: */
+
+    void init(SectionType type, SizeType length) noexcept;
+
+    bool isValid() const noexcept;
+
+    void serializeTo(void * buffer) const noexcept
+    { std::memcpy(buffer, this, sizeof(*this)); }
+
+    bool deserializeFrom(void const * data) noexcept
+        __attribute__ ((nonnull(2), warn_unused_result));
+
+    SectionType type() const noexcept;
+    void setType(SectionType const type) noexcept;
+
+    SizeType size() const noexcept { return littleEndianToHost(m_length); }
+
+    void setSize(SizeType const size) noexcept
+    { m_length = hostToLittleEndian(size); }
+
+private: /* Fields: */
+
+    std::array<char, 32u> m_type;
+    SizeType m_length;
+    std::array<char, 8u - ((sizeof(m_type) + sizeof(m_length)) % 8u)>
+            m_zeroPadding;
+
+};
+
+} /* namespace sharemind { */
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H */

@@ -18,7 +18,7 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION "3.0")
-PROJECT(SharemindLibExecutable VERSION "0.1.0" LANGUAGES "C")
+PROJECT(SharemindLibExecutable VERSION "0.2.0" LANGUAGES "CXX")
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
@@ -27,8 +27,7 @@ FIND_PACKAGE(SharemindCMakeHelpers REQUIRED)
 
 SharemindSetProjectVersion()
 
-FIND_PACKAGE(Boost REQUIRED)
-FIND_PACKAGE(SharemindCHeaders REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders REQUIRED)
 
 
 ################################################################################
@@ -38,18 +37,16 @@ FIND_PACKAGE(SharemindCHeaders REQUIRED)
 FILE(GLOB_RECURSE SharemindLibExecutable_HEADERS
                   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 FILE(GLOB_RECURSE SharemindLibExecutable_SOURCES
-                  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
-SharemindSetC99CompileOptions(COMPILE_FLAGS "-fwrapv")
+                  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+SharemindSetCxx11CompileOptions()
 
 SharemindAddSharedLibrary("libexecutable"
     SOURCES ${SharemindLibExecutable_SOURCES} ${SharemindLibExecutable_HEADERS}
     OUTPUT_NAME "sharemind_executable"
     INCLUDE_DIRECTORIES
-        ${Boost_INCLUDE_DIRS}
-        ${SharemindCHeaders_INCLUDE_DIRS}
-    COMPILE_DEFINITIONS "_BSD_SOURCE" "_DEFAULT_SOURCE"
+        ${SharemindCxxHeaders_INCLUDE_DIRS}
     LEGACY_DEFINITIONS
-        ${SharemindCHeaders_DEFINITIONS}
+        ${SharemindCxxHeaders_DEFINITIONS}
 )
 
 INSTALL(FILES ${SharemindLibExecutable_HEADERS}
@@ -60,14 +57,9 @@ INSTALL(FILES ${SharemindLibExecutable_HEADERS}
 SharemindCreateCMakeFindFiles(
     INCLUDE_DIRS
         "${CMAKE_INSTALL_PREFIX}/include"
-        ${Boost_INCLUDE_DIRS}
-        ${SharemindCHeaders_INCLUDE_DIRS}
+        ${SharemindCxxHeaders_INCLUDE_DIRS}
     DEFINITIONS
-        ${SharemindCHeaders_DEFINITIONS}
-        "-D__STDC_LIMIT_MACROS"
-        "-D__STDC_CONSTANT_MACROS"
-        "-D_BSD_SOURCE"
-        "-D_DEFAULT_SOURCE"
+        ${SharemindCxxHeaders_DEFINITIONS}
     LIBRARIES
         "-L${CMAKE_INSTALL_PREFIX}/lib"
         "-lsharemind_executable"
@@ -80,7 +72,9 @@ SharemindAddComponentPackage("lib"
     NAME "libsharemind-executable"
     DESCRIPTION "Sharemind Executable library"
     DEB_SECTION "libs"
-    DEB_DEPENDS "libc6 (>= 2.19)"
+    DEB_DEPENDS
+        "libc6 (>= 2.19)"
+        "libstdc++6 (>= 4.8.0)"
 )
 SharemindAddComponentPackage("dev"
     NAME "libsharemind-executable-dev"
@@ -88,8 +82,9 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-executable (= ${SharemindLibExecutable_VERSION})"
-        "libsharemind-cheaders-dev (>= 0.1.0)"
+        "libsharemind-cxxheaders-dev (>= 0.1.0)"
         "libc6-dev (>= 2.19)"
+        "libstdc++-dev"
 )
 SharemindAddComponentPackage("debug"
     NAME "libsharemind-executable-dbg"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Cybernetica
+ * Copyright (C) Cybernetica
  *
  * Research/Commercial License Usage
  * Licensees holding a valid Research License or Commercial License
@@ -20,28 +20,51 @@
 #ifndef SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H
 #define SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H
 
-#include <sharemind/extern_c.h>
-#include <sharemind/static_assert.h>
-#include <stdint.h>
-#include "sharemind_executable_read_error.h"
-#include "sharemind_executable_section_type.h"
+#include <array>
+#include <cstdint>
+#include <cstring>
+#include <sharemind/EndianMacros.h>
 
 
-SHAREMIND_EXTERN_C_BEGIN
+namespace sharemind {
 
-#define SHAREMIND_EXECUTABLE_VERSION_SUPPORTED 0x0u
+class ExecutableCommonHeader {
 
-typedef struct {
-    char magic[32];
-    uint64_t byteOrderVerification;
-    uint16_t fileFormatVersion;
-    uint8_t zeroPadding[6];
-} SharemindExecutableCommonHeader;
-SHAREMIND_STATIC_ASSERT(sizeof(SharemindExecutableCommonHeader) == 32 + 8 + 2 + 6);
+public: /* Types: */
 
-void SharemindExecutableCommonHeader_init(SharemindExecutableCommonHeader * h, uint16_t version);
-SHAREMIND_EXECUTABLE_READ_ERROR SharemindExecutableCommonHeader_read(const void * from, SharemindExecutableCommonHeader * h)  __attribute__ ((nonnull(1), warn_unused_result));
+    using FileFormatVersionType = std::uint16_t;
 
-SHAREMIND_EXTERN_C_END
+public: /* Methods: */
+
+    void init(FileFormatVersionType version) noexcept;
+
+    bool isValid() const noexcept;
+
+    void serializeTo(void * buffer) const noexcept
+    { std::memcpy(buffer, this, sizeof(*this)); }
+
+    bool deserializeFrom(void const * data) noexcept
+            __attribute__ ((nonnull(2), warn_unused_result));
+
+    FileFormatVersionType fileFormatVersion() const noexcept
+    { return littleEndianToHost(m_fileFormatVersion); }
+
+    void setFileFormatVersion(FileFormatVersionType version) noexcept
+    { m_fileFormatVersion = hostToLittleEndian(version); }
+
+private: /* Fields: */
+
+    std::array<char, 32u> m_magic;
+    std::uint64_t m_byteOrderVerification;
+    FileFormatVersionType m_fileFormatVersion;
+    std::array<char,
+               8u - ((sizeof(m_magic)
+                      + sizeof(m_byteOrderVerification)
+                      + sizeof(m_fileFormatVersion)) % 8u)>
+            m_zeroPadding;
+
+};
+
+} /* namespace sharemind { */
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_H */
