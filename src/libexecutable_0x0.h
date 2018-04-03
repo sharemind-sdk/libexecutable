@@ -23,7 +23,9 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <sharemind/EndianMacros.h>
+#include <type_traits>
 
 
 namespace sharemind {
@@ -169,5 +171,38 @@ private: /* Fields: */
 };
 
 } /* namespace sharemind { */
+
+/* Provide specialization for enum ExecutableSectionHeader0x0::SectionType.
+   In C++14 and later the standard library provides specializations for all
+   enumeration types, but for C++11 and earlier we must to provide our own.
+*/
+#if __cplusplus < 201402L
+namespace std {
+
+template <>
+struct hash<::sharemind::ExecutableSectionHeader0x0::SectionType> {
+
+/* Types: */
+
+    using argument_type = ::sharemind::ExecutableSectionHeader0x0::SectionType;
+    using result_type = hash<underlying_type<argument_type>::type>::result_type;
+
+/* Methods: */
+
+    result_type operator()(argument_type const sectionType)
+            const noexcept(noexcept(
+                       hash<underlying_type<argument_type>::type>()(
+                           static_cast<underlying_type<argument_type>::type>(
+                               sectionType))))
+    {
+        return hash<underlying_type<argument_type>::type>()(
+                    static_cast<underlying_type<argument_type>::type>(
+                        sectionType));
+    }
+
+};
+
+} /* namespace std { */
+#endif
 
 #endif /* SHAREMIND_LIBEXECUTABLE_LIBEXECUTABLE_0x0_H */
