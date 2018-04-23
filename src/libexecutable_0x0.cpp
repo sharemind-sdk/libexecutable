@@ -119,11 +119,7 @@ bool ExecutableLinkingUnitHeader0x0::deserializeFrom(void const * const data)
 void ExecutableSectionHeader0x0::init(SectionType type, SizeType length)
         noexcept
 {
-    if (type == SectionType::Invalid) {
-        m_type = decltype(m_type){"<INVALID>"};
-    } else {
-        m_type = sMagic[static_cast<decltype(sMagic)::size_type>(type)];
-    }
+    setType(std::move(type));
     m_length = hostToLittleEndian(length);
     std::memset(m_zeroPadding.data(), '\0', m_zeroPadding.size());
 }
@@ -164,6 +160,14 @@ ExecutableSectionHeader0x0::SectionType ExecutableSectionHeader0x0::type()
     MATCH_TYPE(Debug);
 #undef MATCH_TYPE
     return SectionType::Invalid;
+}
+
+void ExecutableSectionHeader0x0::setType(SectionType type) noexcept {
+    if (type == SectionType::Invalid) {
+        m_type = decltype(m_type){"<INVALID>"};
+    } else {
+        m_type = sMagic[static_cast<decltype(sMagic)::size_type>(type)];
+    }
 }
 
 } // namespace sharemind {
