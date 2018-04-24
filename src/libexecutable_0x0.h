@@ -24,9 +24,25 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <istream>
 #include <sharemind/EndianMacros.h>
 #include <type_traits>
 
+
+namespace sharemind {
+class ExecutableHeader0x0;
+class ExecutableLinkingUnitHeader0x0;
+class ExecutableSectionHeader0x0;
+}
+
+std::istream & operator>>(std::istream &,
+                          sharemind::ExecutableHeader0x0 &);
+
+std::istream & operator>>(std::istream &,
+                          sharemind::ExecutableLinkingUnitHeader0x0 &);
+
+std::istream & operator>>(std::istream &,
+                          sharemind::ExecutableSectionHeader0x0 &);
 
 namespace sharemind {
 
@@ -35,6 +51,8 @@ namespace sharemind {
 *******************************************************************************/
 
 class ExecutableHeader0x0 {
+
+    friend std::istream & ::operator>>(std::istream &, ExecutableHeader0x0 &);
 
 public: /* Types: */
 
@@ -86,6 +104,9 @@ private: /* Fields: */
 
 class ExecutableLinkingUnitHeader0x0 {
 
+    friend std::istream & ::operator>>(std::istream &,
+                                       ExecutableLinkingUnitHeader0x0 &);
+
 public: /* Types: */
 
     using NumSectionsSize = std::uint8_t;
@@ -124,6 +145,9 @@ private: /* Fields: */
 *******************************************************************************/
 
 class ExecutableSectionHeader0x0 {
+
+    friend std::istream & ::operator>>(std::istream &,
+                                       ExecutableSectionHeader0x0 &);
 
 public: /* Types: */
 

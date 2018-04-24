@@ -23,12 +23,22 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <istream>
 #include <sharemind/EndianMacros.h>
 
 
 namespace sharemind {
+class ExecutableCommonHeader;
+}
+
+std::istream & operator>>(std::istream &, sharemind::ExecutableCommonHeader &);
+
+namespace sharemind {
 
 class ExecutableCommonHeader {
+
+    friend std::istream & ::operator>>(std::istream &,
+                                       ExecutableCommonHeader &);
 
 public: /* Types: */
 

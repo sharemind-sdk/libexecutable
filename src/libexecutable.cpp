@@ -24,6 +24,15 @@
 #include <utility>
 
 
+std::istream & operator>>(std::istream & is,
+                          sharemind::ExecutableCommonHeader & h)
+{
+    if (is.read(reinterpret_cast<char *>(&h), sizeof(h)))
+        if (!h.isValid())
+            is.setstate(std::ios_base::failbit);
+    return is;
+}
+
 namespace sharemind {
 
 static_assert(sizeof(ExecutableCommonHeader) == 32u + 8u + 2u + 6u, "");
