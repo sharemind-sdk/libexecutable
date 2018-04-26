@@ -25,32 +25,28 @@
 #include <utility>
 
 
-std::istream & operator>>(std::istream & is,
-                          sharemind::ExecutableHeader0x0 & h)
-{
+namespace {
+
+template <typename T>
+std::istream & deserialize(std::istream & is, T & h) {
     if (is.read(reinterpret_cast<char *>(&h), sizeof(h)))
         if (!h.isValid())
             is.setstate(std::ios_base::failbit);
     return is;
 }
+
+} // anonymous namespace
+
+std::istream & operator>>(std::istream & is, sharemind::ExecutableHeader0x0 & h)
+{ return deserialize(is, h); }
 
 std::istream & operator>>(std::istream & is,
                           sharemind::ExecutableLinkingUnitHeader0x0 & h)
-{
-    if (is.read(reinterpret_cast<char *>(&h), sizeof(h)))
-        if (!h.isValid())
-            is.setstate(std::ios_base::failbit);
-    return is;
-}
+{ return deserialize(is, h); }
 
 std::istream & operator>>(std::istream & is,
                           sharemind::ExecutableSectionHeader0x0 & h)
-{
-    if (is.read(reinterpret_cast<char *>(&h), sizeof(h)))
-        if (!h.isValid())
-            is.setstate(std::ios_base::failbit);
-    return is;
-}
+{ return deserialize(is, h); }
 
 namespace sharemind {
 
