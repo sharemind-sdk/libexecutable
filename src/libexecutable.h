@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <cstring>
 #include <istream>
+#include <ostream>
 #include <sharemind/EndianMacros.h>
 
 
@@ -32,6 +33,8 @@ class ExecutableCommonHeader;
 }
 
 std::istream & operator>>(std::istream &, sharemind::ExecutableCommonHeader &);
+std::ostream & operator<<(std::ostream &,
+                          sharemind::ExecutableCommonHeader const &);
 
 namespace sharemind {
 
@@ -39,6 +42,9 @@ class ExecutableCommonHeader {
 
     friend std::istream & ::operator>>(std::istream &,
                                        ExecutableCommonHeader &);
+
+    friend std::ostream & ::operator<<(std::ostream &,
+                                       ExecutableCommonHeader const &);
 
 public: /* Types: */
 

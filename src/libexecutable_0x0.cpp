@@ -20,6 +20,7 @@
 #include "libexecutable_0x0.h"
 
 #include <cassert>
+#include <limits>
 #include <sharemind/IntegralComparisons.h>
 #include <type_traits>
 #include <utility>
@@ -35,18 +36,39 @@ std::istream & deserialize(std::istream & is, T & h) {
     return is;
 }
 
+template <typename T>
+std::ostream & serialize(std::ostream & os, T const & h) {
+    static_assert(sharemind::integralLessEqual(
+                      sizeof(h),
+                      std::numeric_limits<std::streamsize>::max()), "");
+    return os.write(reinterpret_cast<char const *>(&h),
+                    static_cast<std::streamsize>(sizeof(h)));
+}
+
 } // anonymous namespace
 
 std::istream & operator>>(std::istream & is, sharemind::ExecutableHeader0x0 & h)
 { return deserialize(is, h); }
 
+std::ostream & operator<<(std::ostream & os,
+                          sharemind::ExecutableHeader0x0 const & h)
+{ return serialize(os, h); }
+
 std::istream & operator>>(std::istream & is,
                           sharemind::ExecutableLinkingUnitHeader0x0 & h)
 { return deserialize(is, h); }
 
+std::ostream & operator<<(std::ostream & os,
+                          sharemind::ExecutableLinkingUnitHeader0x0 const & h)
+{ return serialize(os, h); }
+
 std::istream & operator>>(std::istream & is,
                           sharemind::ExecutableSectionHeader0x0 & h)
 { return deserialize(is, h); }
+
+std::ostream & operator<<(std::ostream & os,
+                          sharemind::ExecutableSectionHeader0x0 const & h)
+{ return serialize(os, h); }
 
 namespace sharemind {
 

@@ -25,6 +25,7 @@
 #include <cstring>
 #include <functional>
 #include <istream>
+#include <ostream>
 #include <sharemind/EndianMacros.h>
 #include <type_traits>
 
@@ -35,14 +36,19 @@ class ExecutableLinkingUnitHeader0x0;
 class ExecutableSectionHeader0x0;
 }
 
-std::istream & operator>>(std::istream &,
-                          sharemind::ExecutableHeader0x0 &);
+std::istream & operator>>(std::istream &, sharemind::ExecutableHeader0x0 &);
+std::ostream & operator<<(std::ostream &,
+                          sharemind::ExecutableHeader0x0 const &);
 
 std::istream & operator>>(std::istream &,
                           sharemind::ExecutableLinkingUnitHeader0x0 &);
+std::ostream & operator<<(std::ostream &,
+                          sharemind::ExecutableLinkingUnitHeader0x0 const &);
 
 std::istream & operator>>(std::istream &,
                           sharemind::ExecutableSectionHeader0x0 &);
+std::ostream & operator<<(std::ostream &,
+                          sharemind::ExecutableSectionHeader0x0 const &);
 
 namespace sharemind {
 
@@ -53,6 +59,8 @@ namespace sharemind {
 class ExecutableHeader0x0 {
 
     friend std::istream & ::operator>>(std::istream &, ExecutableHeader0x0 &);
+    friend std::ostream & ::operator<<(std::ostream &,
+                                       ExecutableHeader0x0 const &);
 
 public: /* Types: */
 
@@ -106,6 +114,8 @@ class ExecutableLinkingUnitHeader0x0 {
 
     friend std::istream & ::operator>>(std::istream &,
                                        ExecutableLinkingUnitHeader0x0 &);
+    friend std::ostream & ::operator<<(std::ostream &,
+                                       ExecutableLinkingUnitHeader0x0 const &);
 
 public: /* Types: */
 
@@ -148,6 +158,8 @@ class ExecutableSectionHeader0x0 {
 
     friend std::istream & ::operator>>(std::istream &,
                                        ExecutableSectionHeader0x0 &);
+    friend std::ostream & ::operator<<(std::ostream &,
+                                       ExecutableSectionHeader0x0 const &);
 
 public: /* Types: */
 

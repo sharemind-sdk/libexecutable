@@ -20,6 +20,8 @@
 #include "libexecutable.h"
 
 #include <cassert>
+#include <limits>
+#include <sharemind/IntegralComparisons.h>
 #include <type_traits>
 #include <utility>
 
@@ -31,6 +33,16 @@ std::istream & operator>>(std::istream & is,
         if (!h.isValid())
             is.setstate(std::ios_base::failbit);
     return is;
+}
+
+std::ostream & operator<<(std::ostream & os,
+                          sharemind::ExecutableCommonHeader const & h)
+{
+    static_assert(sharemind::integralLessEqual(
+                      sizeof(h),
+                      std::numeric_limits<std::streamsize>::max()), "");
+    return os.write(reinterpret_cast<char const *>(&h),
+                    static_cast<std::streamsize>(sizeof(h)));
 }
 
 namespace sharemind {
