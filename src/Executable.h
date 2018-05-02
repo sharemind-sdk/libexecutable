@@ -145,21 +145,21 @@ struct Executable {
 
     };
 
-    struct BindingsSection {
+    struct SyscallBindingsSection {
 
     /* Methods: */
 
-        BindingsSection() noexcept;
-        BindingsSection(BindingsSection &&) noexcept;
-        BindingsSection(BindingsSection const &);
-        BindingsSection(std::vector<std::string> bindings_) noexcept;
+        SyscallBindingsSection() noexcept;
+        SyscallBindingsSection(SyscallBindingsSection &&) noexcept;
+        SyscallBindingsSection(SyscallBindingsSection const &);
+        SyscallBindingsSection(std::vector<std::string> bindings) noexcept;
 
-        BindingsSection & operator=(BindingsSection &&) noexcept;
-        BindingsSection & operator=(BindingsSection const &);
+        SyscallBindingsSection & operator=(SyscallBindingsSection &&) noexcept;
+        SyscallBindingsSection & operator=(SyscallBindingsSection const &);
 
     /* Fields: */
 
-        std::vector<std::string> bindings;
+        std::vector<std::string> syscallBindings;
 
     };
 
@@ -200,7 +200,7 @@ struct Executable {
         std::shared_ptr<DataSection> roDataSection;
         std::shared_ptr<DataSection> rwDataSection;
         std::shared_ptr<BssSection> bssSection;
-        std::shared_ptr<BindingsSection> bindingsSection;
+        std::shared_ptr<SyscallBindingsSection> syscallBindingsSection;
         std::shared_ptr<PdBindingsSection> pdBindingsSection;
         std::shared_ptr<DataSection> debugSection;
 

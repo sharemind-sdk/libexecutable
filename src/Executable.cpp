@@ -268,23 +268,26 @@ Executable::TextSection & Executable::TextSection::operator=(
 
 
 
-Executable::BindingsSection::BindingsSection() noexcept = default;
+Executable::SyscallBindingsSection::SyscallBindingsSection() noexcept = default;
 
-Executable::BindingsSection::BindingsSection(BindingsSection &&) noexcept
-        = default;
+Executable::SyscallBindingsSection::SyscallBindingsSection(
+        SyscallBindingsSection &&) noexcept = default;
 
-Executable::BindingsSection::BindingsSection(BindingsSection const &) = default;
+Executable::SyscallBindingsSection::SyscallBindingsSection(
+        SyscallBindingsSection const &) = default;
 
-Executable::BindingsSection::BindingsSection(std::vector<std::string> bindings_)
-        noexcept
-    : bindings(std::move(bindings_))
+Executable::SyscallBindingsSection::SyscallBindingsSection(
+        std::vector<std::string> bindings) noexcept
+    : syscallBindings(std::move(bindings))
 {}
 
-Executable::BindingsSection & Executable::BindingsSection::operator=(
-        BindingsSection &&) noexcept = default;
+Executable::SyscallBindingsSection &
+Executable::SyscallBindingsSection::operator=(SyscallBindingsSection &&)
+        noexcept = default;
 
-Executable::BindingsSection & Executable::BindingsSection::operator=(
-        BindingsSection const &) = default;
+Executable::SyscallBindingsSection &
+Executable::SyscallBindingsSection::operator=(SyscallBindingsSection const &)
+        = default;
 
 
 
@@ -326,9 +329,10 @@ Executable::LinkingUnit::LinkingUnit(LinkingUnit const & copy)
     , bssSection(copy.bssSection
                  ? std::make_shared<BssSection>(*copy.bssSection)
                  : std::shared_ptr<BssSection>())
-    , bindingsSection(copy.bindingsSection
-                      ? std::make_shared<BindingsSection>(*copy.bindingsSection)
-                      : std::shared_ptr<BindingsSection>())
+    , syscallBindingsSection(
+        copy.syscallBindingsSection
+        ? std::make_shared<SyscallBindingsSection>(*copy.syscallBindingsSection)
+        : std::shared_ptr<SyscallBindingsSection>())
     , pdBindingsSection(
           copy.pdBindingsSection
           ? std::make_shared<PdBindingsSection>(*copy.pdBindingsSection)
@@ -356,9 +360,11 @@ Executable::LinkingUnit & Executable::LinkingUnit::operator=(
     bssSection = copy.bssSection
                  ? std::make_shared<BssSection>(*copy.bssSection)
                  : std::shared_ptr<BssSection>();
-    bindingsSection = copy.bindingsSection
-                      ? std::make_shared<BindingsSection>(*copy.bindingsSection)
-                      : std::shared_ptr<BindingsSection>();
+    syscallBindingsSection =
+            copy.syscallBindingsSection
+            ? std::make_shared<SyscallBindingsSection>(
+                  *copy.syscallBindingsSection)
+            : std::shared_ptr<SyscallBindingsSection>();
     pdBindingsSection =
           copy.pdBindingsSection
           ? std::make_shared<PdBindingsSection>(*copy.pdBindingsSection)
@@ -379,7 +385,7 @@ std::size_t Executable::LinkingUnit::numberOfSections() const noexcept {
         ++r;
     if (bssSection)
         ++r;
-    if (bindingsSection)
+    if (syscallBindingsSection)
         ++r;
     if (pdBindingsSection)
         ++r;
@@ -429,12 +435,12 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
         if (lu.bssSection)
             checkSectionSize<BssSectionTooBigException>(
                         lu.bssSection->sizeInBytes);
-        if (lu.bindingsSection)
+        if (lu.syscallBindingsSection)
             checkSectionSize<BindingsSectionTooBigException>(
                         calculateBindingsSize<
                             ThrowingBindingsSizeOverflowCheck<
                                 BindingsSectionTooBigException> >(
-                            lu.bindingsSection->bindings));
+                            lu.syscallBindingsSection->syscallBindings));
         if (lu.pdBindingsSection)
             checkSectionSize<BindingsSectionTooBigException>(
                         calculateBindingsSize<
@@ -529,10 +535,11 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
                                        lu.bssSection->sizeInBytes))
             return os;
 
-        if (lu.bindingsSection
-            && !serializeBindingsSection(os,
-                                         SectionType::Bind,
-                                         lu.bindingsSection->bindings))
+        if (lu.syscallBindingsSection
+            && !serializeBindingsSection(
+                    os,
+                    SectionType::Bind,
+                    lu.syscallBindingsSection->syscallBindings))
             return os;
 
         if (lu.pdBindingsSection
