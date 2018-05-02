@@ -221,7 +221,7 @@ struct Executable {
 /* Fields: */
 
     std::vector<LinkingUnit> linkingUnits;
-    std::size_t activeLinkingUnit = 0u;
+    std::size_t activeLinkingUnitIndex = 0u;
 
 };
 

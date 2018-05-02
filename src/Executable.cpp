@@ -413,7 +413,7 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
     if (linkingUnits.size() - 1u
         > std::numeric_limits<ExecutableHeader0x0::NumLinkingUnitsSize>::max())
         throw TooManyLinkingUnitsDefinedException();
-    if (activeLinkingUnit >= linkingUnits.size())
+    if (activeLinkingUnitIndex >= linkingUnits.size())
         throw InvalidActiveLinkingUnitException();
 
     for (auto const & lu : linkingUnits) {
@@ -466,7 +466,7 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
         header0x0.init(static_cast<ExecutableHeader0x0::NumLinkingUnitsSize>(
                            linkingUnits.size() - 1u),
                        static_cast<ExecutableHeader0x0::ActiveLinkingUnitIndex>(
-                           activeLinkingUnit));
+                           activeLinkingUnitIndex));
         assert(header0x0.isValid());
         if (!(os << header0x0))
             return os;
