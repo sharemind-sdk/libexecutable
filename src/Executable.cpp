@@ -21,7 +21,6 @@
 
 #include <cstring>
 #include <limits>
-#include <sharemind/compiler-support/GccNoreturn.h>
 #include <sharemind/Concat.h>
 #include <sharemind/GlobalDeleter.h>
 #include <type_traits>
@@ -64,15 +63,6 @@ std::size_t calculateBindingsSize(BindingsContainer const & bindings) {
         sizeLeft -= binding.size();
     }
     return r;
-}
-
-SHAREMIND_GCC_NORETURN_PART1
-void throwFormatVersionNotSupportedException(std::size_t formatVersion)
-        SHAREMIND_GCC_NORETURN_PART2
-{
-    throw Executable::FormatVersionNotSupportedException(
-                concat("Sharemind Executable file format version ",
-                       formatVersion, " not supported!"));
 }
 
 template <typename Exception>
@@ -406,7 +396,9 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
                                              std::size_t formatVersion) const
 {
     if (formatVersion != 0x0)
-        throwFormatVersionNotSupportedException(formatVersion);
+        throw Executable::FormatVersionNotSupportedException(
+                    concat("Sharemind Executable file format version ",
+                           formatVersion, " not supported for serialization!"));
 
     if (linkingUnits.empty())
         throw NoLinkingUnitsDefinedException();
