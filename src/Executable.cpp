@@ -313,13 +313,61 @@ Executable::LinkingUnit::LinkingUnit() noexcept = default;
 
 Executable::LinkingUnit::LinkingUnit(LinkingUnit &&) noexcept = default;
 
-Executable::LinkingUnit::LinkingUnit(LinkingUnit const &) = default;
+Executable::LinkingUnit::LinkingUnit(LinkingUnit const & copy)
+    : textSection(copy.textSection
+                  ? std::make_shared<TextSection>(*copy.textSection)
+                  : std::shared_ptr<TextSection>())
+    , roDataSection(copy.roDataSection
+                    ? std::make_shared<DataSection>(*copy.roDataSection)
+                    : std::shared_ptr<DataSection>())
+    , rwDataSection(copy.rwDataSection
+                    ? std::make_shared<DataSection>(*copy.rwDataSection)
+                    : std::shared_ptr<DataSection>())
+    , bssSection(copy.bssSection
+                 ? std::make_shared<BssSection>(*copy.bssSection)
+                 : std::shared_ptr<BssSection>())
+    , bindingsSection(copy.bindingsSection
+                      ? std::make_shared<BindingsSection>(*copy.bindingsSection)
+                      : std::shared_ptr<BindingsSection>())
+    , pdBindingsSection(
+          copy.pdBindingsSection
+          ? std::make_shared<PdBindingsSection>(*copy.pdBindingsSection)
+          : std::shared_ptr<PdBindingsSection>())
+    , debugSection(copy.debugSection
+                   ? std::make_shared<DataSection>(*copy.debugSection)
+                   : std::shared_ptr<DataSection>())
+{}
 
 Executable::LinkingUnit & Executable::LinkingUnit::operator=(LinkingUnit &&)
         noexcept = default;
 
 Executable::LinkingUnit & Executable::LinkingUnit::operator=(
-        LinkingUnit const &) = default;
+        LinkingUnit const & copy)
+{
+    textSection = copy.textSection
+                  ? std::make_shared<TextSection>(*copy.textSection)
+                  : std::shared_ptr<TextSection>();
+    roDataSection = copy.roDataSection
+                    ? std::make_shared<DataSection>(*copy.roDataSection)
+                    : std::shared_ptr<DataSection>();
+    rwDataSection = copy.rwDataSection
+                    ? std::make_shared<DataSection>(*copy.rwDataSection)
+                    : std::shared_ptr<DataSection>();
+    bssSection = copy.bssSection
+                 ? std::make_shared<BssSection>(*copy.bssSection)
+                 : std::shared_ptr<BssSection>();
+    bindingsSection = copy.bindingsSection
+                      ? std::make_shared<BindingsSection>(*copy.bindingsSection)
+                      : std::shared_ptr<BindingsSection>();
+    pdBindingsSection =
+          copy.pdBindingsSection
+          ? std::make_shared<PdBindingsSection>(*copy.pdBindingsSection)
+          : std::shared_ptr<PdBindingsSection>();
+    debugSection = copy.debugSection
+                   ? std::make_shared<DataSection>(*copy.debugSection)
+                   : std::shared_ptr<DataSection>();
+    return *this;
+}
 
 std::size_t Executable::LinkingUnit::numberOfSections() const noexcept {
     std::size_t r = 0u;
