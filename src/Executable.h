@@ -21,6 +21,7 @@
 #define SHAREMIND_LIBEXECUTABLE_EXECUTABLE_H
 
 #include <memory>
+#include <istream>
 #include <ostream>
 #include <sharemind/Exception.h>
 #include <sharemind/ExceptionMacros.h>
@@ -76,6 +77,77 @@ struct Executable {
     SHAREMIND_DECLARE_EXCEPTION_CONST_MSG_NOINLINE(
             NotSerializableException,
             DebugSectionTooBigException);
+    SHAREMIND_DECLARE_EXCEPTION_NOINLINE(Exception,
+                                         DeserializationException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_MSG_NOINLINE(
+            DeserializationException,
+            FailedToDeserializeFileHeaderException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_MSG_NOINLINE(
+            DeserializationException,
+            FailedToDeserializeFileHeader0x0Exception);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToDeserializeLinkingUnitHeader0x0Exception);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToDeserializeSectionHeader0x0Exception);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleTextSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleRoDataSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleRwDataSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleBssSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleSyscallBindSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultiplePdBindSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            MultipleDebugSectionsInLinkingUnitException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadTextSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadRoDataSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadRwDataSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadBindSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadPdBindSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadDebugSectionDataException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            FailedToReadZeroPaddingException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            InvalidZeroPaddingException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            DuplicateSyscallBindingException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            DuplicatePdBindingException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            EmptySyscallBindingException);
+    SHAREMIND_DECLARE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+            DeserializationException,
+            EmptyPdBindingException);
 
     struct BssSection {
 
@@ -218,6 +290,8 @@ struct Executable {
     std::ostream & serializeToStream(std::ostream & os,
                                      std::size_t formatVersion = 0u) const;
 
+    std::istream & deserializeFromStream(std::istream & is);
+
 /* Fields: */
 
     std::vector<LinkingUnit> linkingUnits;
@@ -228,5 +302,7 @@ struct Executable {
 } /* namespace sharemind { */
 
 std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex);
+
+std::istream & operator>>(std::istream & is, sharemind::Executable & ex);
 
 #endif /* SHAREMIND_LIBEXECUTABLE_EXECUTABLE_H */

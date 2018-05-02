@@ -21,9 +21,13 @@
 
 #include <cstring>
 #include <limits>
+#include <new>
 #include <sharemind/Concat.h>
 #include <sharemind/GlobalDeleter.h>
+#include <sharemind/IntegralComparisons.h>
+#include <sharemind/ThrowNested.h>
 #include <type_traits>
+#include <unordered_set>
 #include <utility>
 #include "libexecutable.h"
 #include "libexecutable_0x0.h"
@@ -31,6 +35,27 @@
 
 namespace sharemind {
 namespace {
+
+template <
+        typename T,
+        bool checkIsNeeded = (std::numeric_limits<T>::max()
+                              >= std::numeric_limits<std::size_t>::max())
+>
+struct ValidNumberOfInstructionsCheck {
+    static void check(T) noexcept {}
+};
+
+template <typename T>
+struct ValidNumberOfInstructionsCheck<T, true> {
+    static void check(T t) noexcept {
+        if (t >= std::numeric_limits<std::size_t>::max())
+            throw std::bad_array_new_length();
+    }
+};
+
+template <typename T>
+inline void checkValidNumberOfInstructions(T t)
+{ return ValidNumberOfInstructionsCheck<T>::check(t); }
 
 template <typename Exception>
 struct ThrowingBindingsSizeOverflowCheck {
@@ -129,6 +154,94 @@ std::ostream & serializeBindingsSection(
     return os.write(extraPadding, extraPaddingSize[size % 8u]);
 }
 
+template <typename ... ExceptionGenerators>
+std::istream & istreamSetFailure(std::istream & is,
+                                 ExceptionGenerators ... exceptionGenerators)
+{
+    try {
+        is.setstate(std::ios_base::failbit);
+    } catch (std::ios_base::failure const & e) {
+        throwNested(exceptionGenerators()..., e);
+    }
+    return is;
+}
+
+template <typename ValueToRead, typename ... ExceptionGenerators>
+std::istream & istreamReadValue(std::istream & is,
+                                ValueToRead & value,
+                                ExceptionGenerators ... exceptionGenerators)
+{
+    try {
+        return is >> value;
+    } catch (std::ios_base::failure const & e) {
+        throwNested(exceptionGenerators()..., e);
+    }
+}
+
+template <typename ReadFailedException, typename ValueToRead>
+std::istream & istreamReadValue(std::istream & is, ValueToRead & value)
+{ return istreamReadValue(is, value, []() { return ReadFailedException(); }); }
+
+template <typename SizeType, typename ... ExceptionGenerators>
+std::istream & istreamReadRawData(std::istream & is,
+                                  void * buffer,
+                                  SizeType size,
+                                  ExceptionGenerators ... exceptionGenerators)
+{
+    static constexpr auto const maxRead =
+            std::numeric_limits<std::streamsize>::max();
+    auto buf = static_cast<char *>(buffer);
+    try {
+        while (integralGreater(size, maxRead)) {
+            if (!is.read(buf, maxRead))
+                return is;
+            size -= maxRead;
+            buf += maxRead;
+        }
+        if (!is.read(buf, static_cast<std::streamsize>(size)))
+            return is;
+    } catch (std::ios_base::failure const & e) {
+        throwNested(exceptionGenerators()..., e);
+    }
+    return is;
+}
+
+class LimitedBufferFilter: public std::streambuf {
+
+public: /* Methods: */
+
+    LimitedBufferFilter(LimitedBufferFilter &&) = delete;
+    LimitedBufferFilter(LimitedBufferFilter const &) = delete;
+
+    LimitedBufferFilter(std::istream & srcStream, std::size_t size)
+        : m_srcStream(srcStream)
+        , m_sizeLeft(size)
+    {}
+
+protected: /* Methods: */
+
+    int_type underflow() override {
+        if (gptr() < egptr())
+            return traits_type::to_int_type(m_buf);
+        if (m_sizeLeft <= 0u)
+            return traits_type::eof();
+        auto r(m_srcStream.get());
+        if (r == traits_type::eof())
+            return r;
+        --m_sizeLeft;
+        m_buf = traits_type::to_char_type(std::move(r));
+        this->setg(&m_buf, &m_buf, &m_buf + 1u);
+        return r;
+    }
+
+private: /* Fields: */
+
+    std::istream & m_srcStream;
+    std::size_t m_sizeLeft;
+    char m_buf;
+
+};
+
 } // anonymous namespace
 
 SHAREMIND_DEFINE_EXCEPTION_NOINLINE(sharemind::Exception,
@@ -201,7 +314,104 @@ SHAREMIND_DEFINE_EXCEPTION_CONST_MSG_NOINLINE(
         Executable::,
         DebugSectionTooBigException,
         "Debug section is too big to serialize!");
-
+SHAREMIND_DEFINE_EXCEPTION_NOINLINE(Exception,
+                                    Executable::,
+                                    DeserializationException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_MSG_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToDeserializeFileHeaderException,
+        "Failed to deserialize Sharemind executable file header!");
+SHAREMIND_DEFINE_EXCEPTION_CONST_MSG_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToDeserializeFileHeader0x0Exception,
+        "Failed to deserialize Sharemind executable file header specific to "
+        "format version 0!");
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToDeserializeLinkingUnitHeader0x0Exception);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToDeserializeSectionHeader0x0Exception);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleTextSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleRoDataSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleRwDataSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleBssSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleSyscallBindSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultiplePdBindSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        MultipleDebugSectionsInLinkingUnitException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadTextSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadRoDataSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadRwDataSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadBindSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadPdBindSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadDebugSectionDataException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        FailedToReadZeroPaddingException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        InvalidZeroPaddingException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        DuplicateSyscallBindingException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        DuplicatePdBindingException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        EmptySyscallBindingException);
+SHAREMIND_DEFINE_EXCEPTION_CONST_STDSTRING_NOINLINE(
+        DeserializationException,
+        Executable::,
+        EmptyPdBindingException);
 
 
 Executable::DataSection::DataSection() noexcept {}
@@ -551,7 +761,253 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
     return os;
 }
 
+std::istream & Executable::deserializeFromStream(std::istream & is) {
+    ExecutableCommonHeader exeHeader;
+    istreamReadValue<FailedToDeserializeFileHeaderException>(is, exeHeader);
+
+    {
+        auto const version(exeHeader.fileFormatVersion());
+        if (version > 0u)
+            return istreamSetFailure(
+                    is,
+                    [version]() {
+                        return Executable::FormatVersionNotSupportedException(
+                            concat("Sharemind Executable file format "
+                                   "version ", version,
+                                   " not supported for deserialization!"));
+                    });
+    }
+
+    ExecutableHeader0x0 exeHeader0x0;
+    istreamReadValue<FailedToDeserializeFileHeader0x0Exception>(is,
+                                                                exeHeader0x0);
+
+    Executable result;
+    result.activeLinkingUnitIndex = exeHeader0x0.activeLinkingUnitIndex();
+
+    static std::size_t const extraPadding[8] =
+            { 0u, 7u, 6u, 5u, 4u, 3u, 2u, 1u };
+    char extraPaddingBuffer[8u];
+
+    auto lusLeftMinusOne = exeHeader0x0.numberOfLinkingUnitsMinusOne();
+    static_assert(std::numeric_limits<decltype(lusLeftMinusOne)>::max()
+                  < std::numeric_limits<std::size_t>::max(), "");
+    std::size_t luIndex = 0u;
+
+    for (;; --lusLeftMinusOne, ++luIndex) {
+        ExecutableLinkingUnitHeader0x0 luHeader0x0;
+        istreamReadValue(
+                    is,
+                    luHeader0x0,
+                    [luIndex]() {
+                        return FailedToDeserializeLinkingUnitHeader0x0Exception(
+                            concat("Failed to deserialize Sharemind executable "
+                                   "file linking unit header specific to "
+                                   "format version 0 for linking unit ",
+                                   luIndex, "!"));
+                    });
+
+        #if __cplusplus >= 201703L
+        auto & lu = result.linkingUnits.emplace_back();
+        #else
+        result.linkingUnits.emplace_back();
+        auto & lu = result.linkingUnits.back();
+        #endif
+
+        auto sectionsLeftMinusOne = luHeader0x0.numberOfSectionsMinusOne();
+        static_assert(std::numeric_limits<decltype(sectionsLeftMinusOne)>::max()
+                      < std::numeric_limits<std::size_t>::max(), "");
+        std::size_t sectionIndex = 0u;
+
+        for (;; --sectionsLeftMinusOne, ++sectionIndex) {
+            ExecutableSectionHeader0x0 sectionHeader0x0;
+            istreamReadValue(
+                    is,
+                    sectionHeader0x0,
+                    [luIndex, sectionIndex]() {
+                        return FailedToDeserializeSectionHeader0x0Exception(
+                            concat("Failed to deserialize Sharemind executable "
+                                   "file linking unit header specific to "
+                                   "format version 0 for linking unit ",
+                                   luIndex, " and section ", sectionIndex,
+                                   "!"));
+                    });
+
+            auto const sectionType = sectionHeader0x0.type();
+            assert(sectionType
+                   != ExecutableSectionHeader0x0::SectionType::Invalid);
+
+            auto const sectionSize = sectionHeader0x0.size();
+            static_assert(std::numeric_limits<decltype(sectionSize)>::max()
+                          <= std::numeric_limits<std::size_t>::max(), "");
+
+#define READ_AND_CHECK_ZERO_PADDING \
+    do { \
+        auto const paddingSize(extraPadding[sectionSize % 8]); \
+        assert(sizeof(extraPaddingBuffer) >= paddingSize); \
+        static_assert(std::numeric_limits<std::streamsize>::max() >= 8, \
+                      ""); \
+        if (!istreamReadRawData( \
+                    is, \
+                    extraPaddingBuffer, \
+                    static_cast<std::streamsize>(paddingSize), \
+                    [luIndex, sectionIndex]() { \
+                        return FailedToReadZeroPaddingException( \
+                            concat("Failed to read zero padding after " \
+                                   "linking unit ", luIndex, ", section ", \
+                                   sectionIndex, '!')); \
+                    })) \
+            return is; \
+        for (unsigned i = 0u; i < paddingSize; ++i) \
+            if (extraPaddingBuffer[i] != '\0') \
+                return istreamSetFailure( \
+                    is, \
+                    [luIndex, sectionIndex]() { \
+                        return InvalidZeroPaddingException( \
+                            concat("Non-zero padding found after linking " \
+                                   "unit ", luIndex, ", section ", \
+                                   sectionIndex, '!')); \
+                    }); \
+    } while (false)
+#define CHECK_DUPLICATE_SECTION(sName,eName,edesc) \
+    if (lu.sName ## Section) { \
+        return istreamSetFailure( \
+            is, \
+            [luIndex]() { \
+                return Multiple ## eName ## SectionsInLinkingUnitException( \
+                    concat("Multiple " edesc " sections defined in " \
+                           "linking unit ", luIndex, '!')); \
+            }); \
+    } else (void) 0
+#define INIT_DATASECTION(sName,eName,edesc) \
+    do { \
+        CHECK_DUPLICATE_SECTION(sName, eName, edesc); \
+        auto newSection(std::make_shared<DataSection>()); \
+        if (sectionSize <= 0u) \
+            break; \
+        newSection->data = \
+                std::shared_ptr<void>(::operator new(sectionSize), \
+                                      GlobalDeleter()); \
+        newSection->sizeInBytes = sectionSize; \
+        if (!istreamReadRawData( \
+                    is, \
+                    newSection->data.get(), \
+                    sectionSize, \
+                    [luIndex]() { \
+                        return FailedToRead ## eName ## SectionDataException( \
+                            concat("Failed to read contents of " edesc \
+                                   " section in linking unit ", luIndex, '!'));\
+                    })) \
+            return is; \
+        lu.sName ## Section = std::move(newSection); \
+        READ_AND_CHECK_ZERO_PADDING; \
+    } while(false)
+#define INIT_BINDSECTION(sName,eName,edesc) \
+    do { \
+        CHECK_DUPLICATE_SECTION(sName, eName, edesc); \
+        if (sectionSize <= 0) \
+            break; \
+        std::unordered_set<std::string> bsSet; \
+        LimitedBufferFilter limitedBuffer(is, sectionSize); \
+        std::istream is2(&limitedBuffer); \
+        std::string bindName; \
+        auto newSection(std::make_shared<eName ## ingsSection>()); \
+        std::vector<std::string> & bs = newSection->sName; \
+        while (std::getline(is2, bindName, '\0')) { \
+            if (bindName.empty()) \
+                return istreamSetFailure( \
+                    is, \
+                    [luIndex, sectionIndex]() { \
+                        return Empty ## eName ## ingException( \
+                            concat("Invalid empty binding found in " edesc \
+                                   " section in linking unit ", luIndex, \
+                                   ", section ", sectionIndex, '!')); \
+                    }); \
+            if (bsSet.find(bindName) != bsSet.cend()) \
+                return istreamSetFailure( \
+                    is, \
+                    [luIndex, sectionIndex, &bindName]() { \
+                        return Duplicate ## eName ## ingException( \
+                            concat("Duplicate binding for \"", bindName, \
+                                   "\" found in " edesc " section in linking " \
+                                   "unit ", luIndex, ", section ", \
+                                   sectionIndex, '!')); \
+                    }); \
+            bs.emplace_back(bindName); \
+            bsSet.emplace(std::move(bindName)); \
+        } \
+        lu.sName ## Section = std::move(newSection); \
+        READ_AND_CHECK_ZERO_PADDING; \
+    } while(false)
+
+            switch (sectionType) {
+            case ExecutableSectionHeader0x0::SectionType::Text:
+                CHECK_DUPLICATE_SECTION(text, Text, "text");
+
+                lu.textSection = std::make_shared<TextSection>();
+                if (sectionSize <= 0u)
+                    break;
+                {
+                    auto & instructions = lu.textSection->instructions;
+                    checkValidNumberOfInstructions(sectionSize);
+                    instructions.reserve(
+                                static_cast<std::size_t>(sectionSize) + 1u);
+                    instructions.resize(sectionSize);
+                    if (!istreamReadRawData(
+                                is,
+                                instructions.data(),
+                                sectionSize * sizeof(SharemindCodeBlock),
+                                [luIndex]() {
+                                    return FailedToReadTextSectionDataException(
+                                        concat("Failed to read contents of "
+                                               "text section in linking unit ",
+                                               luIndex, '!'));
+                                }))
+                        return is;
+                }
+                break;
+            case ExecutableSectionHeader0x0::SectionType::RoData:
+                INIT_DATASECTION(roData, RoData, "read-only data");
+                break;
+            case ExecutableSectionHeader0x0::SectionType::Data:
+                INIT_DATASECTION(rwData, RwData, "read-write data");
+                break;
+            case ExecutableSectionHeader0x0::SectionType::Bss:
+                CHECK_DUPLICATE_SECTION(bss, Bss, "BSS");
+                lu.bssSection = std::make_shared<BssSection>(sectionSize);
+                break;
+            case ExecutableSectionHeader0x0::SectionType::Bind:
+                INIT_BINDSECTION(syscallBindings,
+                                 SyscallBind,
+                                 "system call bindings");
+                break;
+            case ExecutableSectionHeader0x0::SectionType::PdBind:
+                INIT_BINDSECTION(pdBindings,
+                                 PdBind,
+                                 "protection domain bindings");
+                break;
+            default:
+                assert(sectionType ==
+                       ExecutableSectionHeader0x0::SectionType::Debug);
+                INIT_DATASECTION(debug, Debug, "debug");
+                break;
+            }
+            if (!sectionsLeftMinusOne)
+                break;
+        } // Loop over sections in linking unit
+
+        if (!lusLeftMinusOne)
+            break;
+    } // Loop over linking units
+
+    (*this) = std::move(result);
+    return is;
+}
+
 } /* namespace sharemind { */
 
 std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex)
 { return ex.serializeToStream(os); }
+
+std::istream & operator>>(std::istream & is, sharemind::Executable & ex)
+{ return ex.deserializeFromStream(is); }
