@@ -227,7 +227,6 @@ struct Executable {
 
 } /* namespace sharemind { */
 
-std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex)
-{ return ex.serializeToStream(os); }
+std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex);
 
 #endif /* SHAREMIND_LIBEXECUTABLE_EXECUTABLE_H */

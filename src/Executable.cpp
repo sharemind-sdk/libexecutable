@@ -552,3 +552,6 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
 }
 
 } /* namespace sharemind { */
+
+std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex)
+{ return ex.serializeToStream(os); }
