@@ -20,6 +20,7 @@
 #ifndef SHAREMIND_LIBEXECUTABLE_EXECUTABLE_H
 #define SHAREMIND_LIBEXECUTABLE_EXECUTABLE_H
 
+#include <cstddef>
 #include <memory>
 #include <istream>
 #include <ostream>
