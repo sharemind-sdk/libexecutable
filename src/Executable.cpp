@@ -608,6 +608,12 @@ std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex) {
     using namespace sharemind;
     using E = Executable;
 
+    if (ex.fileFormatVersion != 0x0)
+        throw Executable::FormatVersionNotSupportedException(
+                concat("Sharemind Executable file format version ",
+                       ex.fileFormatVersion,
+                       " not supported for serialization!"));
+
     if (ex.linkingUnits.empty())
         throw E::NoLinkingUnitsDefinedException();
     if (ex.linkingUnits.size() - 1u
@@ -763,11 +769,23 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
     using namespace sharemind;
     using E = Executable;
 
+    /* Reset output variable, set fileFormatVersion and activeLinkingUnitIndex
+       to -1 to signal that the respective information has not yet been
+       successfully read and parsed: */
+    ex.fileFormatVersion = static_cast<std::size_t>(-1);
+    ex.linkingUnits.clear();
+    ex.activeLinkingUnitIndex = static_cast<std::size_t>(-1);
+
     ExecutableCommonHeader exeHeader;
     istreamReadValue<E::FailedToDeserializeFileHeaderException>(is, exeHeader);
 
     {
         auto const version(exeHeader.fileFormatVersion());
+        static_assert(
+                std::numeric_limits<decltype(version)>::max()
+                <= std::numeric_limits<decltype(ex.fileFormatVersion)>::max(),
+                "");
+        ex.fileFormatVersion = version;
         if (version > 0u)
             return istreamSetFailure(
                     is,
@@ -784,8 +802,7 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
                 is,
                 exeHeader0x0);
 
-    Executable result;
-    result.activeLinkingUnitIndex = exeHeader0x0.activeLinkingUnitIndex();
+    ex.activeLinkingUnitIndex = exeHeader0x0.activeLinkingUnitIndex();
 
     static std::size_t const extraPadding[8] =
             { 0u, 7u, 6u, 5u, 4u, 3u, 2u, 1u };
@@ -1002,6 +1019,5 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
             break;
     } // Loop over linking units
 
-    ex = std::move(result);
     return is;
 }

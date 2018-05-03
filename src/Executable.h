@@ -290,6 +290,7 @@ struct Executable {
 
 /* Fields: */
 
+    std::size_t fileFormatVersion = 0x0;
     std::vector<LinkingUnit> linkingUnits;
     std::size_t activeLinkingUnitIndex = 0u;
 
