@@ -813,6 +813,7 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
                   < std::numeric_limits<std::size_t>::max(), "");
     std::size_t luIndex = 0u;
 
+    auto & linkingUnits = ex.linkingUnits;
     for (;; --lusLeftMinusOne, ++luIndex) {
         ExecutableLinkingUnitHeader0x0 luHeader0x0;
         istreamReadValue(
@@ -827,10 +828,10 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
                 });
 
         #if __cplusplus >= 201703L
-        auto & lu = result.linkingUnits.emplace_back();
+        auto & lu = linkingUnits.emplace_back();
         #else
-        result.linkingUnits.emplace_back();
-        auto & lu = result.linkingUnits.back();
+        linkingUnits.emplace_back();
+        auto & lu = linkingUnits.back();
         #endif
 
         auto sectionsLeftMinusOne = luHeader0x0.numberOfSectionsMinusOne();
