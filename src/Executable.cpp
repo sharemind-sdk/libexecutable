@@ -809,11 +809,13 @@ std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
     char extraPaddingBuffer[8u];
 
     auto lusLeftMinusOne = exeHeader0x0.numberOfLinkingUnitsMinusOne();
+
     static_assert(std::numeric_limits<decltype(lusLeftMinusOne)>::max()
                   < std::numeric_limits<std::size_t>::max(), "");
-    std::size_t luIndex = 0u;
-
     auto & linkingUnits = ex.linkingUnits;
+    linkingUnits.reserve(static_cast<std::size_t>(lusLeftMinusOne) + 1u);
+
+    std::size_t luIndex = 0u;
     for (;; --lusLeftMinusOne, ++luIndex) {
         ExecutableLinkingUnitHeader0x0 luHeader0x0;
         istreamReadValue(
