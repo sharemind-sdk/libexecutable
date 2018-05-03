@@ -602,62 +602,60 @@ Executable::Executable(Executable const &) = default;
 Executable & Executable::operator=(Executable &&) noexcept = default;
 Executable & Executable::operator=(Executable const &) = default;
 
-std::ostream & Executable::serializeToStream(std::ostream & os,
-                                             std::size_t formatVersion) const
-{
-    if (formatVersion != 0x0)
-        throw Executable::FormatVersionNotSupportedException(
-                    concat("Sharemind Executable file format version ",
-                           formatVersion, " not supported for serialization!"));
+} // namespace sharemind
 
-    if (linkingUnits.empty())
-        throw NoLinkingUnitsDefinedException();
-    if (linkingUnits.size() - 1u
+std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex) {
+    using namespace sharemind;
+    using E = Executable;
+
+    if (ex.linkingUnits.empty())
+        throw E::NoLinkingUnitsDefinedException();
+    if (ex.linkingUnits.size() - 1u
         > std::numeric_limits<ExecutableHeader0x0::NumLinkingUnitsSize>::max())
-        throw TooManyLinkingUnitsDefinedException();
-    if (activeLinkingUnitIndex >= linkingUnits.size())
-        throw InvalidActiveLinkingUnitException();
+        throw E::TooManyLinkingUnitsDefinedException();
+    if (ex.activeLinkingUnitIndex >= ex.linkingUnits.size())
+        throw E::InvalidActiveLinkingUnitException();
 
-    for (auto const & lu : linkingUnits) {
+    for (auto const & lu : ex.linkingUnits) {
         auto const numberOfSections = lu.numberOfSections();
         if (!numberOfSections)
-            throw NoSectionsDefinedInLinkingUnitException();
+            throw E::NoSectionsDefinedInLinkingUnitException();
         using NSS = ExecutableLinkingUnitHeader0x0::NumSectionsSize;
         if (numberOfSections - 1u > std::numeric_limits<NSS>::max())
-            throw TooManySectionsDefinedInLinkingUnitException();
+            throw E::TooManySectionsDefinedInLinkingUnitException();
         if (lu.textSection)
-            checkSectionSize<TextSectionTooBigException>(
+            checkSectionSize<E::TextSectionTooBigException>(
                         lu.textSection->instructions.size());
         if (lu.roDataSection)
-            checkSectionSize<RoDataSectionTooBigException>(
+            checkSectionSize<E::RoDataSectionTooBigException>(
                         lu.roDataSection->sizeInBytes);
         if (lu.rwDataSection)
-            checkSectionSize<RwDataSectionTooBigException>(
+            checkSectionSize<E::RwDataSectionTooBigException>(
                         lu.rwDataSection->sizeInBytes);
         if (lu.bssSection)
-            checkSectionSize<BssSectionTooBigException>(
+            checkSectionSize<E::BssSectionTooBigException>(
                         lu.bssSection->sizeInBytes);
         if (lu.syscallBindingsSection)
-            checkSectionSize<BindingsSectionTooBigException>(
+            checkSectionSize<E::BindingsSectionTooBigException>(
                         calculateBindingsSize<
                             ThrowingBindingsSizeOverflowCheck<
-                                BindingsSectionTooBigException> >(
+                                E::BindingsSectionTooBigException> >(
                             lu.syscallBindingsSection->syscallBindings));
         if (lu.pdBindingsSection)
-            checkSectionSize<BindingsSectionTooBigException>(
+            checkSectionSize<E::BindingsSectionTooBigException>(
                         calculateBindingsSize<
                             ThrowingBindingsSizeOverflowCheck<
-                                PdBindingsSectionTooBigException> >(
+                                E::PdBindingsSectionTooBigException> >(
                             lu.pdBindingsSection->pdBindings));
         if (lu.debugSection)
-            checkSectionSize<DebugSectionTooBigException>(
+            checkSectionSize<E::DebugSectionTooBigException>(
                         lu.debugSection->sizeInBytes);
     }
 
     {
         ExecutableCommonHeader header;
         header.init(static_cast<ExecutableCommonHeader::FileFormatVersionType>(
-                        formatVersion));
+                        0x0));
         assert(header.isValid());
         if (!(os << header))
             return os;
@@ -666,15 +664,15 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
     {
         ExecutableHeader0x0 header0x0;
         header0x0.init(static_cast<ExecutableHeader0x0::NumLinkingUnitsSize>(
-                           linkingUnits.size() - 1u),
+                           ex.linkingUnits.size() - 1u),
                        static_cast<ExecutableHeader0x0::ActiveLinkingUnitIndex>(
-                           activeLinkingUnitIndex));
+                           ex.activeLinkingUnitIndex));
         assert(header0x0.isValid());
         if (!(os << header0x0))
             return os;
     }
 
-    for (auto const & lu : linkingUnits) {
+    for (auto const & lu : ex.linkingUnits) {
         {
             ExecutableLinkingUnitHeader0x0 luHeader0x0;
             using NSS = ExecutableLinkingUnitHeader0x0::NumSectionsSize;
@@ -761,9 +759,12 @@ std::ostream & Executable::serializeToStream(std::ostream & os,
     return os;
 }
 
-std::istream & Executable::deserializeFromStream(std::istream & is) {
+std::istream & operator>>(std::istream & is, sharemind::Executable & ex) {
+    using namespace sharemind;
+    using E = Executable;
+
     ExecutableCommonHeader exeHeader;
-    istreamReadValue<FailedToDeserializeFileHeaderException>(is, exeHeader);
+    istreamReadValue<E::FailedToDeserializeFileHeaderException>(is, exeHeader);
 
     {
         auto const version(exeHeader.fileFormatVersion());
@@ -771,7 +772,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
             return istreamSetFailure(
                     is,
                     [version]() {
-                        return Executable::FormatVersionNotSupportedException(
+                        return E::FormatVersionNotSupportedException(
                             concat("Sharemind Executable file format "
                                    "version ", version,
                                    " not supported for deserialization!"));
@@ -779,8 +780,9 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
     }
 
     ExecutableHeader0x0 exeHeader0x0;
-    istreamReadValue<FailedToDeserializeFileHeader0x0Exception>(is,
-                                                                exeHeader0x0);
+    istreamReadValue<E::FailedToDeserializeFileHeader0x0Exception>(
+                is,
+                exeHeader0x0);
 
     Executable result;
     result.activeLinkingUnitIndex = exeHeader0x0.activeLinkingUnitIndex();
@@ -797,15 +799,15 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
     for (;; --lusLeftMinusOne, ++luIndex) {
         ExecutableLinkingUnitHeader0x0 luHeader0x0;
         istreamReadValue(
-                    is,
-                    luHeader0x0,
-                    [luIndex]() {
-                        return FailedToDeserializeLinkingUnitHeader0x0Exception(
-                            concat("Failed to deserialize Sharemind executable "
-                                   "file linking unit header specific to "
-                                   "format version 0 for linking unit ",
-                                   luIndex, "!"));
-                    });
+                is,
+                luHeader0x0,
+                [luIndex]() {
+                    return E::FailedToDeserializeLinkingUnitHeader0x0Exception(
+                        concat("Failed to deserialize Sharemind executable "
+                               "file linking unit header specific to "
+                               "format version 0 for linking unit ",
+                               luIndex, "!"));
+                });
 
         #if __cplusplus >= 201703L
         auto & lu = result.linkingUnits.emplace_back();
@@ -825,7 +827,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                     is,
                     sectionHeader0x0,
                     [luIndex, sectionIndex]() {
-                        return FailedToDeserializeSectionHeader0x0Exception(
+                        return E::FailedToDeserializeSectionHeader0x0Exception(
                             concat("Failed to deserialize Sharemind executable "
                                    "file linking unit header specific to "
                                    "format version 0 for linking unit ",
@@ -852,7 +854,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                     extraPaddingBuffer, \
                     static_cast<std::streamsize>(paddingSize), \
                     [luIndex, sectionIndex]() { \
-                        return FailedToReadZeroPaddingException( \
+                        return E::FailedToReadZeroPaddingException( \
                             concat("Failed to read zero padding after " \
                                    "linking unit ", luIndex, ", section ", \
                                    sectionIndex, '!')); \
@@ -863,7 +865,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                 return istreamSetFailure( \
                     is, \
                     [luIndex, sectionIndex]() { \
-                        return InvalidZeroPaddingException( \
+                        return E::InvalidZeroPaddingException( \
                             concat("Non-zero padding found after linking " \
                                    "unit ", luIndex, ", section ", \
                                    sectionIndex, '!')); \
@@ -874,7 +876,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
         return istreamSetFailure( \
             is, \
             [luIndex]() { \
-                return Multiple ## eName ## SectionsInLinkingUnitException( \
+                return E::Multiple ## eName ## SectionsInLinkingUnitException( \
                     concat("Multiple " edesc " sections defined in " \
                            "linking unit ", luIndex, '!')); \
             }); \
@@ -882,7 +884,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
 #define INIT_DATASECTION(sName,eName,edesc) \
     do { \
         CHECK_DUPLICATE_SECTION(sName, eName, edesc); \
-        auto newSection(std::make_shared<DataSection>()); \
+        auto newSection(std::make_shared<E::DataSection>()); \
         if (sectionSize <= 0u) \
             break; \
         newSection->data = \
@@ -890,14 +892,14 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                                       GlobalDeleter()); \
         newSection->sizeInBytes = sectionSize; \
         if (!istreamReadRawData( \
-                    is, \
-                    newSection->data.get(), \
-                    sectionSize, \
-                    [luIndex]() { \
-                        return FailedToRead ## eName ## SectionDataException( \
-                            concat("Failed to read contents of " edesc \
-                                   " section in linking unit ", luIndex, '!'));\
-                    })) \
+                is, \
+                newSection->data.get(), \
+                sectionSize, \
+                [luIndex]() { \
+                    return E::FailedToRead ## eName ## SectionDataException( \
+                        concat("Failed to read contents of " edesc \
+                               " section in linking unit ", luIndex, '!'));\
+                })) \
             return is; \
         lu.sName ## Section = std::move(newSection); \
         READ_AND_CHECK_ZERO_PADDING; \
@@ -911,14 +913,14 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
         LimitedBufferFilter limitedBuffer(is, sectionSize); \
         std::istream is2(&limitedBuffer); \
         std::string bindName; \
-        auto newSection(std::make_shared<eName ## ingsSection>()); \
+        auto newSection(std::make_shared<E::eName ## ingsSection>()); \
         std::vector<std::string> & bs = newSection->sName; \
         while (std::getline(is2, bindName, '\0')) { \
             if (bindName.empty()) \
                 return istreamSetFailure( \
                     is, \
                     [luIndex, sectionIndex]() { \
-                        return Empty ## eName ## ingException( \
+                        return E::Empty ## eName ## ingException( \
                             concat("Invalid empty binding found in " edesc \
                                    " section in linking unit ", luIndex, \
                                    ", section ", sectionIndex, '!')); \
@@ -927,7 +929,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                 return istreamSetFailure( \
                     is, \
                     [luIndex, sectionIndex, &bindName]() { \
-                        return Duplicate ## eName ## ingException( \
+                        return E::Duplicate ## eName ## ingException( \
                             concat("Duplicate binding for \"", bindName, \
                                    "\" found in " edesc " section in linking " \
                                    "unit ", luIndex, ", section ", \
@@ -944,7 +946,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
             case ExecutableSectionHeader0x0::SectionType::Text:
                 CHECK_DUPLICATE_SECTION(text, Text, "text");
 
-                lu.textSection = std::make_shared<TextSection>();
+                lu.textSection = std::make_shared<E::TextSection>();
                 if (sectionSize <= 0u)
                     break;
                 {
@@ -954,15 +956,15 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                                 static_cast<std::size_t>(sectionSize) + 1u);
                     instructions.resize(sectionSize);
                     if (!istreamReadRawData(
-                                is,
-                                instructions.data(),
-                                sectionSize * sizeof(SharemindCodeBlock),
-                                [luIndex]() {
-                                    return FailedToReadTextSectionDataException(
-                                        concat("Failed to read contents of "
-                                               "text section in linking unit ",
-                                               luIndex, '!'));
-                                }))
+                            is,
+                            instructions.data(),
+                            sectionSize * sizeof(SharemindCodeBlock),
+                            [luIndex]() {
+                                return E::FailedToReadTextSectionDataException(
+                                    concat("Failed to read contents of "
+                                           "text section in linking unit ",
+                                           luIndex, '!'));
+                            }))
                         return is;
                 }
                 break;
@@ -974,7 +976,7 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
                 break;
             case ExecutableSectionHeader0x0::SectionType::Bss:
                 CHECK_DUPLICATE_SECTION(bss, Bss, "BSS");
-                lu.bssSection = std::make_shared<BssSection>(sectionSize);
+                lu.bssSection = std::make_shared<E::BssSection>(sectionSize);
                 break;
             case ExecutableSectionHeader0x0::SectionType::Bind:
                 INIT_BINDSECTION(syscallBindings,
@@ -1000,14 +1002,6 @@ std::istream & Executable::deserializeFromStream(std::istream & is) {
             break;
     } // Loop over linking units
 
-    (*this) = std::move(result);
+    ex = std::move(result);
     return is;
 }
-
-} /* namespace sharemind { */
-
-std::ostream & operator<<(std::ostream & os, sharemind::Executable const & ex)
-{ return ex.serializeToStream(os); }
-
-std::istream & operator>>(std::istream & is, sharemind::Executable & ex)
-{ return ex.deserializeFromStream(is); }

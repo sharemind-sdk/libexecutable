@@ -288,11 +288,6 @@ struct Executable {
     Executable & operator=(Executable &&) noexcept;
     Executable & operator=(Executable const &);
 
-    std::ostream & serializeToStream(std::ostream & os,
-                                     std::size_t formatVersion = 0u) const;
-
-    std::istream & deserializeFromStream(std::istream & is);
-
 /* Fields: */
 
     std::vector<LinkingUnit> linkingUnits;
