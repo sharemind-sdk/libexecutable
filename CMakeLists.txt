@@ -81,7 +81,7 @@ SharemindAddComponentPackage("dev"
     DESCRIPTION "Sharemind Executable library development headers"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
-        "libsharemind-executable (= ${SharemindLibExecutable_VERSION})"
+        "libsharemind-executable (= ${SharemindLibExecutable_DEB_lib_PACKAGE_VERSION})"
         "libsharemind-cxxheaders-dev (>= 0.1.0)"
         "libc6-dev (>= 2.19)"
         "libstdc++-dev"
@@ -90,6 +90,6 @@ SharemindAddComponentPackage("debug"
     NAME "libsharemind-executable-dbg"
     DESCRIPTION "Sharemind Executable library debug symbols"
     DEB_SECTION "debug"
-    DEB_DEPENDS "libsharemind-executable (= ${SharemindLibExecutable_VERSION})"
+    DEB_DEPENDS "libsharemind-executable (= ${SharemindLibExecutable_DEB_lib_PACKAGE_VERSION})"
 )
 SharemindPackagingFinalize()
