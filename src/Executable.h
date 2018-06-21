@@ -28,6 +28,7 @@
 #include <sharemind/ExceptionMacros.h>
 #include <sharemind/codeblock.h>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 
@@ -202,55 +203,82 @@ struct Executable {
 
     struct TextSection {
 
+    /* Types: */
+
+        using Container = std::vector<SharemindCodeBlock>;
+
     /* Methods: */
 
-        TextSection() noexcept;
-        TextSection(TextSection &&) noexcept;
+        TextSection()
+                noexcept(
+                    std::is_nothrow_default_constructible<Container>::value);
+        TextSection(TextSection &&)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
         TextSection(TextSection const &);
-        TextSection(std::vector<SharemindCodeBlock> instructions_) noexcept;
+        TextSection(Container instructions_)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
 
-        TextSection & operator=(TextSection &&) noexcept;
+        TextSection & operator=(TextSection &&)
+                noexcept(std::is_nothrow_move_assignable<Container>::value);
         TextSection & operator=(TextSection const &);
 
     /* Fields: */
 
-        std::vector<SharemindCodeBlock> instructions;
+        Container instructions;
 
     };
 
     struct SyscallBindingsSection {
 
+    /* Types: */
+
+        using Container = std::vector<std::string>;
+
     /* Methods: */
 
-        SyscallBindingsSection() noexcept;
-        SyscallBindingsSection(SyscallBindingsSection &&) noexcept;
+        SyscallBindingsSection()
+                noexcept(
+                    std::is_nothrow_default_constructible<Container>::value);
+        SyscallBindingsSection(SyscallBindingsSection &&)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
         SyscallBindingsSection(SyscallBindingsSection const &);
-        SyscallBindingsSection(std::vector<std::string> bindings) noexcept;
+        SyscallBindingsSection(Container bindings)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
 
-        SyscallBindingsSection & operator=(SyscallBindingsSection &&) noexcept;
+        SyscallBindingsSection & operator=(SyscallBindingsSection &&)
+                noexcept(std::is_nothrow_move_assignable<Container>::value);
         SyscallBindingsSection & operator=(SyscallBindingsSection const &);
 
     /* Fields: */
 
-        std::vector<std::string> syscallBindings;
+        Container syscallBindings;
 
     };
 
     struct PdBindingsSection {
 
+    /* Types: */
+
+        using Container = std::vector<std::string>;
+
     /* Methods: */
 
-        PdBindingsSection() noexcept;
-        PdBindingsSection(PdBindingsSection &&) noexcept;
+        PdBindingsSection()
+                noexcept(
+                    std::is_nothrow_default_constructible<Container>::value);
+        PdBindingsSection(PdBindingsSection &&)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
         PdBindingsSection(PdBindingsSection const &);
-        PdBindingsSection(std::vector<std::string> pdBindings_) noexcept;
+        PdBindingsSection(Container pdBindings_)
+                noexcept(std::is_nothrow_move_constructible<Container>::value);
 
-        PdBindingsSection & operator=(PdBindingsSection &&) noexcept;
+        PdBindingsSection & operator=(PdBindingsSection &&)
+                noexcept(std::is_nothrow_move_assignable<Container>::value);
         PdBindingsSection & operator=(PdBindingsSection const &);
 
     /* Fields: */
 
-        std::vector<std::string> pdBindings;
+        Container pdBindings;
 
     };
 

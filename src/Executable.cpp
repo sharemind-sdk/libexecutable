@@ -449,41 +449,49 @@ Executable::DataSection & Executable::DataSection::operator=(
 
 
 
-Executable::TextSection::TextSection() noexcept = default;
+Executable::TextSection::TextSection()
+        noexcept(std::is_nothrow_default_constructible<Container>::value)
+        = default;
 
-Executable::TextSection::TextSection(TextSection &&) noexcept = default;
+Executable::TextSection::TextSection(TextSection &&)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
+        = default;
 
 Executable::TextSection::TextSection(TextSection const &) = default;
 
-Executable::TextSection::TextSection(
-        std::vector<SharemindCodeBlock> instructions_) noexcept
+Executable::TextSection::TextSection(Container instructions_)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
     : instructions(std::move(instructions_))
 {}
 
 Executable::TextSection & Executable::TextSection::operator=(TextSection &&)
-        noexcept = default;
+        noexcept(std::is_nothrow_move_assignable<Container>::value) = default;
 
 Executable::TextSection & Executable::TextSection::operator=(
         TextSection const &) = default;
 
 
 
-Executable::SyscallBindingsSection::SyscallBindingsSection() noexcept = default;
+Executable::SyscallBindingsSection::SyscallBindingsSection()
+        noexcept(std::is_nothrow_default_constructible<Container>::value)
+        = default;
 
 Executable::SyscallBindingsSection::SyscallBindingsSection(
-        SyscallBindingsSection &&) noexcept = default;
+        SyscallBindingsSection &&)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
+        = default;
 
 Executable::SyscallBindingsSection::SyscallBindingsSection(
         SyscallBindingsSection const &) = default;
 
-Executable::SyscallBindingsSection::SyscallBindingsSection(
-        std::vector<std::string> bindings) noexcept
+Executable::SyscallBindingsSection::SyscallBindingsSection(Container bindings)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
     : syscallBindings(std::move(bindings))
 {}
 
 Executable::SyscallBindingsSection &
 Executable::SyscallBindingsSection::operator=(SyscallBindingsSection &&)
-        noexcept = default;
+        noexcept(std::is_nothrow_move_assignable<Container>::value) = default;
 
 Executable::SyscallBindingsSection &
 Executable::SyscallBindingsSection::operator=(SyscallBindingsSection const &)
@@ -491,21 +499,25 @@ Executable::SyscallBindingsSection::operator=(SyscallBindingsSection const &)
 
 
 
-Executable::PdBindingsSection::PdBindingsSection() noexcept = default;
+Executable::PdBindingsSection::PdBindingsSection()
+        noexcept(std::is_nothrow_default_constructible<Container>::value)
+        = default;
 
-Executable::PdBindingsSection::PdBindingsSection(PdBindingsSection &&) noexcept
+Executable::PdBindingsSection::PdBindingsSection(PdBindingsSection &&)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
         = default;
 
 Executable::PdBindingsSection::PdBindingsSection(PdBindingsSection const &)
         = default;
 
-Executable::PdBindingsSection::PdBindingsSection(
-        std::vector<std::string> pdBindings_) noexcept
+Executable::PdBindingsSection::PdBindingsSection(Container pdBindings_)
+        noexcept(std::is_nothrow_move_constructible<Container>::value)
     : pdBindings(std::move(pdBindings_))
 {}
 
 Executable::PdBindingsSection & Executable::PdBindingsSection::operator=(
-        PdBindingsSection &&) noexcept = default;
+        PdBindingsSection &&)
+        noexcept(std::is_nothrow_move_assignable<Container>::value) = default;
 
 Executable::PdBindingsSection & Executable::PdBindingsSection::operator=(
         PdBindingsSection const &) = default;
