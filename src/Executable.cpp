@@ -607,11 +607,17 @@ std::size_t Executable::LinkingUnit::numberOfSections() const noexcept {
 }
 
 
-Executable::Executable() noexcept = default;
-Executable::Executable(Executable &&) noexcept = default;
+Executable::Executable()
+        noexcept(std::is_nothrow_default_constructible<LuContainer>::value)
+        = default;
+Executable::Executable(Executable &&)
+        noexcept(std::is_nothrow_move_constructible<LuContainer>::value)
+        = default;
 Executable::Executable(Executable const &) = default;
 
-Executable & Executable::operator=(Executable &&) noexcept = default;
+Executable & Executable::operator=(Executable &&)
+        noexcept(std::is_nothrow_move_assignable<LuContainer>::value)
+        = default;
 Executable & Executable::operator=(Executable const &) = default;
 
 } // namespace sharemind

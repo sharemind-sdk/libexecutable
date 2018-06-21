@@ -307,19 +307,24 @@ struct Executable {
 
     };
 
+    using LuContainer = std::vector<LinkingUnit>;
+
 /* Methods: */
 
-    Executable() noexcept;
-    Executable(Executable &&) noexcept;
+    Executable()
+            noexcept(std::is_nothrow_default_constructible<LuContainer>::value);
+    Executable(Executable &&)
+            noexcept(std::is_nothrow_move_constructible<LuContainer>::value);
     Executable(Executable const &);
 
-    Executable & operator=(Executable &&) noexcept;
+    Executable & operator=(Executable &&)
+            noexcept(std::is_nothrow_move_assignable<LuContainer>::value);
     Executable & operator=(Executable const &);
 
 /* Fields: */
 
     std::size_t fileFormatVersion = 0x0;
-    std::vector<LinkingUnit> linkingUnits;
+    LuContainer linkingUnits;
     std::size_t activeLinkingUnitIndex = 0u;
 
 };
