@@ -22,8 +22,7 @@
 
 #include <cstddef>
 #include <memory>
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <sharemind/Exception.h>
 #include <sharemind/ExceptionMacros.h>
 #include <sharemind/codeblock.h>

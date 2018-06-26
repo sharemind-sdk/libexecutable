@@ -23,8 +23,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <sharemind/EndianMacros.h>
 
 

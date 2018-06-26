@@ -20,8 +20,10 @@
 #include "Executable.h"
 
 #include <cstring>
+#include <istream>
 #include <limits>
 #include <new>
+#include <ostream>
 #include <sharemind/Concat.h>
 #include <sharemind/GlobalDeleter.h>
 #include <sharemind/IntegralComparisons.h>

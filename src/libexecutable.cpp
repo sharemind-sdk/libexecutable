@@ -20,7 +20,9 @@
 #include "libexecutable.h"
 
 #include <cassert>
+#include <istream>
 #include <limits>
+#include <ostream>
 #include <sharemind/IntegralComparisons.h>
 #include <type_traits>
 #include <utility>

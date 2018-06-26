@@ -24,8 +24,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
-#include <istream>
-#include <ostream>
+#include <iosfwd>
 #include <sharemind/EndianMacros.h>
 #include <type_traits>
 
