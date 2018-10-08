@@ -25,6 +25,7 @@
 #include <new>
 #include <ostream>
 #include <sharemind/Concat.h>
+#include <sharemind/DebugOnly.h>
 #include <sharemind/GlobalDeleter.h>
 #include <sharemind/IntegralComparisons.h>
 #include <sharemind/ThrowNested.h>
@@ -73,7 +74,8 @@ struct ThrowingBindingsSizeOverflowCheck {
 struct AssertingBindingsSizeOverflowCheck {
 
     template <typename BindingSize, typename SizeLeft>
-    void operator()(BindingSize bindingSize, SizeLeft sizeLeft)
+    void operator()(BindingSize SHAREMIND_DEBUG_ONLY(bindingSize),
+                    SizeLeft SHAREMIND_DEBUG_ONLY(sizeLeft))
     { assert(bindingSize <= sizeLeft); }
 
 };
