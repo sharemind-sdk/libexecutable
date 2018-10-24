@@ -178,7 +178,7 @@ std::istream & istreamReadValue(std::istream & is,
     try {
         return is >> value;
     } catch (std::ios_base::failure const & e) {
-        throwNested(exceptionGenerators()..., e);
+        throwNested(e, exceptionGenerators()...);
     }
 }
 
