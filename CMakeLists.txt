@@ -23,45 +23,34 @@ PROJECT(SharemindLibExecutable VERSION 0.3.0 LANGUAGES "CXX")
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
-FIND_PACKAGE(SharemindCMakeHelpers 1.3 REQUIRED)
+FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
 
-FIND_PACKAGE(SharemindCxxHeaders 0.4.0 REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.8.0 REQUIRED)
 
 
-################################################################################
-# libexecutable
-################################################################################
-
+# LibExecutable:
 FILE(GLOB_RECURSE SharemindLibExecutable_HEADERS
                   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 FILE(GLOB_RECURSE SharemindLibExecutable_SOURCES
                   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 SharemindSetCxx14CompileOptions()
-
-SharemindAddSharedLibrary("libexecutable"
+SharemindAddSharedLibrary(LibExecutable
     SOURCES ${SharemindLibExecutable_SOURCES} ${SharemindLibExecutable_HEADERS}
     OUTPUT_NAME "sharemind_executable"
-    INCLUDE_DIRECTORIES
-        ${SharemindCxxHeaders_INCLUDE_DIRS}
-    LEGACY_DEFINITIONS
-        ${SharemindCxxHeaders_DEFINITIONS}
 )
-
+TARGET_INCLUDE_DIRECTORIES(LibExecutable
+    INTERFACE
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src> # TODO
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    )
+TARGET_LINK_LIBRARIES(LibExecutable PUBLIC Sharemind::CxxHeaders)
 INSTALL(FILES ${SharemindLibExecutable_HEADERS}
         DESTINATION "include/sharemind/libexecutable"
         COMPONENT dev)
-
-# Install cmake files:
-SharemindCreateCMakeFindFiles(
-    INCLUDE_DIRS
-        "${CMAKE_INSTALL_PREFIX}/include"
-        ${SharemindCxxHeaders_INCLUDE_DIRS}
-    DEFINITIONS
-        ${SharemindCxxHeaders_DEFINITIONS}
-    LIBRARIES
-        "-L${CMAKE_INSTALL_PREFIX}/lib"
-        "-lsharemind_executable"
-)
+SharemindCreateCMakeFindFilesForTarget(LibExecutable
+    DEPENDENCIES
+        "SharemindCxxHeaders 0.8.0"
+    )
 
 
 # Packaging:
@@ -80,7 +69,7 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-executable (= ${SharemindLibExecutable_DEB_lib_PACKAGE_VERSION})"
-        "libsharemind-cxxheaders-dev (>= 0.4.0)"
+        "libsharemind-cxxheaders-dev (>= 0.8.0)"
         "libc6-dev (>= 2.19)"
         "libstdc++-dev"
 )
