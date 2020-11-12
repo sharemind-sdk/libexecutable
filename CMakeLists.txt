@@ -33,7 +33,6 @@ FILE(GLOB_RECURSE SharemindLibExecutable_HEADERS
                   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 FILE(GLOB_RECURSE SharemindLibExecutable_SOURCES
                   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-SharemindSetCxx14CompileOptions()
 SharemindAddSharedLibrary(LibExecutable
     SOURCES ${SharemindLibExecutable_SOURCES} ${SharemindLibExecutable_HEADERS}
     OUTPUT_NAME "sharemind_executable"
