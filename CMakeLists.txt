@@ -25,7 +25,7 @@ INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
 FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
 
-FIND_PACKAGE(SharemindCxxHeaders 0.9.0 REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.10.1 REQUIRED)
 
 
 # LibExecutable:
@@ -48,7 +48,7 @@ INSTALL(FILES ${SharemindLibExecutable_HEADERS}
         COMPONENT dev)
 SharemindCreateCMakeFindFilesForTarget(LibExecutable
     DEPENDENCIES
-        "SharemindCxxHeaders 0.9.0"
+        "SharemindCxxHeaders 0.10.1"
     )
 
 
@@ -68,7 +68,7 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-executable (= ${SharemindLibExecutable_DEB_lib_PACKAGE_VERSION})"
-        "libsharemind-cxxheaders-dev (>= 0.9.0)"
+        "libsharemind-cxxheaders-dev (>= 0.10.1)"
         "libc6-dev (>= 2.19)"
         "libstdc++-dev"
 )
